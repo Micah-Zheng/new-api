@@ -63,7 +63,13 @@ function GroupRatioBadge({ ratio }: { ratio: ApiKeyGroupOption['ratio'] }) {
   if (!label) return null
 
   return (
-    <Badge variant='outline' className={getRatioBadgeClassName(ratio)}>
+    <Badge
+      variant='outline'
+      className={cn(
+        'max-w-24 shrink-0 truncate text-[10px] sm:max-w-none sm:text-xs',
+        getRatioBadgeClassName(ratio)
+      )}
+    >
       {label}
     </Badge>
   )
@@ -114,12 +120,12 @@ export function ApiKeyGroupCombobox({
           aria-invalid={error}
           disabled={disabled}
           className={cn(
-            'border-input bg-muted/40 h-auto min-h-20 w-full justify-between gap-3 rounded-lg px-4 py-3 text-start shadow-none transition-[background-color,border-color,box-shadow] duration-150 hover:bg-muted/55 hover:text-foreground active:bg-background data-[state=open]:border-ring data-[state=open]:bg-background data-[state=open]:ring-ring/20 data-[state=open]:ring-[3px]',
+            'border-input bg-muted/40 h-auto min-h-14 w-full justify-between gap-2 rounded-lg px-3 py-2 text-start shadow-none transition-[background-color,border-color,box-shadow] duration-150 hover:bg-muted/55 hover:text-foreground active:bg-background data-[state=open]:border-ring data-[state=open]:bg-background data-[state=open]:ring-ring/20 data-[state=open]:ring-[3px] sm:min-h-20 sm:gap-3 sm:px-4 sm:py-3',
             error &&
               'border-destructive bg-destructive/5 ring-destructive/20 hover:bg-destructive/10 data-[state=open]:border-destructive data-[state=open]:ring-destructive/25'
           )}
         >
-          <span className='flex min-w-0 flex-1 items-center justify-between gap-3'>
+          <span className='flex min-w-0 flex-1 items-center justify-between gap-2 sm:gap-3'>
             <span className='min-w-0'>
               <span
                 className={cn(
@@ -130,12 +136,14 @@ export function ApiKeyGroupCombobox({
                 {selectedOption?.value || placeholder || t('Select a group')}
               </span>
               {selectedOption?.desc && (
-                <span className='text-muted-foreground block truncate text-xs'>
+                <span className='text-muted-foreground block truncate text-[11px] sm:text-xs'>
                   {selectedOption.desc}
                 </span>
               )}
             </span>
-            <GroupRatioBadge ratio={selectedOption?.ratio} />
+            <span className='hidden sm:block'>
+              <GroupRatioBadge ratio={selectedOption?.ratio} />
+            </span>
           </span>
           <ChevronsUpDown className='h-4 w-4 shrink-0 opacity-50' />
         </Button>

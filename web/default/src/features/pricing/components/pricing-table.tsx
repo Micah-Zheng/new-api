@@ -28,7 +28,7 @@ export interface PricingTableProps {
   usdExchangeRate?: number
   tokenUnit?: TokenUnit
   showRechargePrice?: boolean
-  onModelClick: (modelName: string) => void
+  onModelClick?: (modelName: string) => void
 }
 
 export function PricingTable(props: PricingTableProps) {
@@ -68,7 +68,7 @@ export function PricingTable(props: PricingTableProps) {
 
   const handleRowClick = useCallback(
     (model: PricingModel) => {
-      onModelClick(model.model_name || '')
+      onModelClick?.(model.model_name)
     },
     [onModelClick]
   )
