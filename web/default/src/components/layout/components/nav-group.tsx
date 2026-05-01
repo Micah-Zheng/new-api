@@ -35,6 +35,15 @@ import {
 } from '../types'
 import { ChatPresetsItem } from './chat-presets-item'
 
+function splitUrl(url: string) {
+  const [pathname, search = ''] = url.split('?')
+
+  return {
+    pathname,
+    search,
+  }
+}
+
 /**
  * Sidebar navigation group component
  * Renders a group of navigation items, supporting regular links and collapsible submenus
@@ -99,6 +108,14 @@ function NavBadge({ children }: { children: ReactNode }) {
  */
 function SidebarMenuLink({ item, href }: { item: NavLink; href: string }) {
   const { setOpenMobile } = useSidebar()
+  const content = (
+    <>
+      {item.icon && <item.icon />}
+      <span>{item.title}</span>
+      {item.badge && <NavBadge>{item.badge}</NavBadge>}
+    </>
+  )
+
   return (
     <SidebarMenuItem>
       <SidebarMenuButton
@@ -106,11 +123,34 @@ function SidebarMenuLink({ item, href }: { item: NavLink; href: string }) {
         isActive={checkIsActive(href, item)}
         tooltip={item.title}
       >
-        <Link to={item.url} onClick={() => setOpenMobile(false)}>
-          {item.icon && <item.icon />}
-          <span>{item.title}</span>
-          {item.badge && <NavBadge>{item.badge}</NavBadge>}
-        </Link>
+        {item.newTab ? (
+          <a
+            href={String(item.url)}
+            target='_blank'
+            rel='noopener noreferrer'
+            onClick={() => setOpenMobile(false)}
+          >
+            {content}
+          </a>
+        ) : (
+          (() => {
+            const { pathname, search } = splitUrl(String(item.url))
+
+            return (
+              <Link
+                to={pathname}
+                search={
+                  search
+                    ? Object.fromEntries(new URLSearchParams(search))
+                    : undefined
+                }
+                onClick={() => setOpenMobile(false)}
+              >
+                {content}
+              </Link>
+            )
+          })()
+        )}
       </SidebarMenuButton>
     </SidebarMenuItem>
   )
@@ -164,11 +204,25 @@ function SidebarMenuCollapsible({
                   asChild
                   isActive={checkIsActive(href, subItem)}
                 >
-                  <Link to={subItem.url} onClick={() => setOpenMobile(false)}>
-                    {subItem.icon && <subItem.icon />}
-                    <span>{subItem.title}</span>
-                    {subItem.badge && <NavBadge>{subItem.badge}</NavBadge>}
-                  </Link>
+                  {(() => {
+                    const { pathname, search } = splitUrl(String(subItem.url))
+
+                    return (
+                      <Link
+                        to={pathname}
+                        search={
+                          search
+                            ? Object.fromEntries(new URLSearchParams(search))
+                            : undefined
+                        }
+                        onClick={() => setOpenMobile(false)}
+                      >
+                        {subItem.icon && <subItem.icon />}
+                        <span>{subItem.title}</span>
+                        {subItem.badge && <NavBadge>{subItem.badge}</NavBadge>}
+                      </Link>
+                    )
+                  })()}
                 </SidebarMenuSubButton>
               </SidebarMenuSubItem>
             ))}

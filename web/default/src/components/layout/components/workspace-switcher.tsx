@@ -33,12 +33,11 @@ type WorkspaceSwitcherProps = {
  * Workspace switcher component
  * Allows users to switch between different workspaces
  * - Regular users can only see the default workspace
- * - Super administrators can see the system settings workspace
+ * - Administrators can see the system settings workspace
  */
 export function WorkspaceSwitcher({
   workspaces,
   defaultName = 'New API',
-  defaultVersion,
 }: WorkspaceSwitcherProps) {
   const { t } = useTranslation()
   const navigate = useNavigate()
@@ -46,14 +45,14 @@ export function WorkspaceSwitcher({
   const { isMobile } = useSidebar()
   const { status } = useStatus()
   const { logo } = useSystemConfig()
-  const isSuperAdmin = useAuthStore(
-    (state) => state.auth.user?.role === ROLE.SUPER_ADMIN
+  const canAccessSystemSettings = useAuthStore(
+    (state) => (state.auth.user?.role ?? ROLE.GUEST) >= ROLE.ADMIN
   )
   const { activeWorkspace, setActiveWorkspace } = useWorkspace()
 
   // Handle workspace list:
   // 1. Populate first workspace with system info
-  // 2. Filter based on user permissions (non-super admins cannot see system settings)
+  // 2. Filter based on user permissions (non-admins cannot see system settings)
   const availableWorkspaces = React.useMemo(
     () =>
       workspaces
@@ -62,22 +61,20 @@ export function WorkspaceSwitcher({
             ? {
                 ...workspace,
                 name: status?.system_name || defaultName,
-                plan: status?.version || defaultVersion || t('Unknown version'),
+                plan: '',
               }
             : workspace
         )
         .filter(
           (workspace) =>
-            isSuperAdmin || workspace.id !== WORKSPACE_IDS.SYSTEM_SETTINGS
+            canAccessSystemSettings ||
+            workspace.id !== WORKSPACE_IDS.SYSTEM_SETTINGS
         ),
     [
       workspaces,
       status?.system_name,
-      status?.version,
       defaultName,
-      defaultVersion,
-      isSuperAdmin,
-      t,
+      canAccessSystemSettings,
     ]
   )
 
@@ -138,7 +135,9 @@ export function WorkspaceSwitcher({
       )}
       <div className='grid flex-1 text-start text-sm leading-tight group-data-[collapsible=icon]:hidden'>
         <span className='truncate font-semibold'>{activeWorkspace.name}</span>
-        <span className='truncate text-xs'>{activeWorkspace.plan}</span>
+        {activeWorkspace.plan && (
+          <span className='truncate text-xs'>{activeWorkspace.plan}</span>
+        )}
       </div>
       {canSwitchWorkspace && (
         <ChevronsUpDown className='ms-auto group-data-[collapsible=icon]:hidden' />
