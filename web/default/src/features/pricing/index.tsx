@@ -2,6 +2,7 @@ import { useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { PublicLayout } from '@/components/layout'
 import { PageTransition } from '@/components/page-transition'
+import { useAuthStore } from '@/stores/auth-store'
 import {
   LoadingSkeleton,
   EmptyState,
@@ -25,6 +26,7 @@ type PricingProps = {
 
 export function Pricing(props: PricingProps = {}) {
   const { t } = useTranslation()
+  const currentUserGroup = useAuthStore((state) => state.auth.user?.group)
   const routeTo = props.routeTo ?? '/pricing'
   const heroMode = props.heroMode ?? 'full'
   const isCompactHero = heroMode === 'compact'
@@ -91,9 +93,9 @@ export function Pricing(props: PricingProps = {}) {
   const availableGroups = useMemo(
     () =>
       Object.keys(usableGroup || {}).filter(
-        (g) => !EXCLUDED_GROUPS.includes(g)
+        (g) => !EXCLUDED_GROUPS.includes(g) && g !== currentUserGroup
       ),
-    [usableGroup]
+    [currentUserGroup, usableGroup]
   )
 
   const handleClearAll = useCallback(() => {
