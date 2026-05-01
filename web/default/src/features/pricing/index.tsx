@@ -20,11 +20,15 @@ type PricingProps = {
   embedded?: boolean
   routeTo?: '/pricing' | '/model-square'
   detailPath?: '/pricing/$modelId' | '/model-square/$modelId'
+  heroMode?: 'full' | 'compact' | 'hidden'
 }
 
 export function Pricing(props: PricingProps = {}) {
   const { t } = useTranslation()
   const routeTo = props.routeTo ?? '/pricing'
+  const heroMode = props.heroMode ?? 'full'
+  const isCompactHero = heroMode === 'compact'
+  const showHero = heroMode !== 'hidden'
   const [selectedModelName, setSelectedModelName] = useState<string | null>(null)
 
   const {
@@ -135,7 +139,11 @@ export function Pricing(props: PricingProps = {}) {
 
   if (isLoading) {
     const loadingContent = (
-      <div className='mx-auto w-full max-w-[1800px] px-3 pt-16 pb-8 sm:px-6 sm:pt-20 sm:pb-10 xl:px-8'>
+      <div
+        className={`mx-auto w-full max-w-[1800px] px-3 pb-8 sm:px-6 sm:pb-10 xl:px-8 ${
+          isCompactHero ? 'pt-6 sm:pt-8' : 'pt-16 sm:pt-20'
+        }`}
+      >
         <LoadingSkeleton viewMode={viewMode} />
       </div>
     )
@@ -148,9 +156,12 @@ export function Pricing(props: PricingProps = {}) {
 
   const content = (
     <div className='relative'>
+      {showHero && (
         <div
           aria-hidden
-          className='pointer-events-none absolute inset-x-0 top-0 h-[600px] opacity-20 dark:opacity-[0.10]'
+          className={`pointer-events-none absolute inset-x-0 top-0 opacity-20 dark:opacity-[0.10] ${
+            isCompactHero ? 'h-[220px]' : 'h-[600px]'
+          }`}
           style={{
             background: [
               'radial-gradient(ellipse 60% 50% at 20% 20%, oklch(0.72 0.18 250 / 80%) 0%, transparent 70%)',
@@ -161,37 +172,70 @@ export function Pricing(props: PricingProps = {}) {
             WebkitMaskImage: 'linear-gradient(to bottom, black 40%, transparent 100%)',
           }}
         />
-        <PageTransition className='relative mx-auto w-full max-w-[1800px] px-3 pt-16 pb-8 sm:px-6 sm:pt-20 sm:pb-10 xl:px-8'>
-          <header className='mx-auto mb-5 max-w-3xl pt-5 text-center sm:mb-10 sm:pt-10'>
-            <p className='text-muted-foreground mb-3 text-xs font-medium tracking-widest uppercase'>
-              {t('Models Directory')}
-            </p>
-            <h1 className='text-[clamp(2rem,5.5vw,3.5rem)] leading-[1.15] font-bold tracking-tight'>
-              {t('Model Square')}
-            </h1>
-            <p className='text-muted-foreground/80 mt-3 text-sm sm:mt-4 sm:text-base'>
-              {t('This site currently has {{count}} models enabled', {
-                count: models?.length || 0,
-              })}
-            </p>
-            <p className='text-muted-foreground/60 mx-auto mt-2 max-w-2xl text-xs leading-relaxed sm:text-sm'>
-              {t(
-                'Discover curated AI models, compare pricing and capabilities, and choose the right model for every scenario.'
+      )}
+        <PageTransition
+          className={`relative mx-auto w-full max-w-[1800px] px-3 pb-8 sm:px-6 sm:pb-10 xl:px-8 ${
+            isCompactHero ? 'pt-4 sm:pt-5' : 'pt-16 sm:pt-20'
+          }`}
+        >
+          {showHero && (
+            <header
+              className={`mx-auto max-w-3xl ${
+                isCompactHero
+                  ? 'mb-4 text-left sm:mb-5'
+                  : 'mb-5 pt-5 text-center sm:mb-10 sm:pt-10'
+              }`}
+            >
+              {!isCompactHero && (
+                <p className='text-muted-foreground mb-3 text-xs font-medium tracking-widest uppercase'>
+                  {t('Models Directory')}
+                </p>
               )}
-            </p>
-            <p className='text-muted-foreground/60 mx-auto mt-2 max-w-2xl text-xs leading-relaxed sm:text-sm'>
-              {t(
-                'Prices are shown at base rates. Click a model name to view prices adjusted by group ratios.'
-              )}
-            </p>
-            <SearchBar
-              value={searchInput}
-              onChange={setSearchInput}
-              onClear={clearSearch}
-              placeholder={t('Search model name, provider, endpoint, or tag...')}
-              className='mx-auto mt-4 max-w-2xl sm:mt-6'
-            />
-          </header>
+              <div className={isCompactHero ? 'flex flex-col gap-3' : undefined}>
+                <div>
+                  <h1
+                    className={
+                      isCompactHero
+                        ? 'text-2xl leading-tight font-bold tracking-tight sm:text-3xl'
+                        : 'text-[clamp(2rem,5.5vw,3.5rem)] leading-[1.15] font-bold tracking-tight'
+                    }
+                  >
+                    {t('Model Square')}
+                  </h1>
+                  <p className='text-muted-foreground/80 mt-2 text-sm sm:text-base'>
+                    {t('This site currently has {{count}} models enabled', {
+                      count: models?.length || 0,
+                    })}
+                  </p>
+                  {!isCompactHero && (
+                    <>
+                      <p className='text-muted-foreground/60 mx-auto mt-2 max-w-2xl text-xs leading-relaxed sm:text-sm'>
+                        {t(
+                          'Discover curated AI models, compare pricing and capabilities, and choose the right model for every scenario.'
+                        )}
+                      </p>
+                      <p className='text-muted-foreground/60 mx-auto mt-2 max-w-2xl text-xs leading-relaxed sm:text-sm'>
+                        {t(
+                          'Prices are shown at base rates. Click a model name to view prices adjusted by group ratios.'
+                        )}
+                      </p>
+                    </>
+                  )}
+                </div>
+                <SearchBar
+                  value={searchInput}
+                  onChange={setSearchInput}
+                  onClear={clearSearch}
+                  placeholder={t(
+                    'Search model name, provider, endpoint, or tag...'
+                  )}
+                  className={`${
+                    isCompactHero ? 'max-w-3xl' : 'mx-auto mt-4 max-w-2xl sm:mt-6'
+                  }`}
+                />
+              </div>
+            </header>
+          )}
 
           <div className='grid gap-4 xl:grid-cols-[330px_minmax(0,1fr)] 2xl:grid-cols-[330px_minmax(0,1fr)]'>
             <PricingSidebar
@@ -216,6 +260,13 @@ export function Pricing(props: PricingProps = {}) {
             />
 
             <main className='min-w-0 space-y-4'>
+              {isCompactHero && (
+                <p className='text-muted-foreground/60 text-xs leading-relaxed sm:text-sm'>
+                  {t(
+                    'Prices are shown at base rates. Click a model name to view prices adjusted by group ratios.'
+                  )}
+                </p>
+              )}
               <PricingToolbar
                 filteredCount={filteredModels.length}
                 totalCount={models?.length}

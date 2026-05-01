@@ -25,9 +25,10 @@ function ModelSquare() {
   return (
     <>
       <AppHeader />
-      <Main className='overflow-auto py-6'>
+      <Main className='overflow-auto py-3 sm:py-4'>
         <Pricing
           embedded
+          heroMode='compact'
           routeTo='/model-square'
           detailPath='/model-square/$modelId'
         />
