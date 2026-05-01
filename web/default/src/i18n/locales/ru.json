@@ -2643,6 +2643,7 @@
     "Price:": "Цена:",
     "Price: High to Low": "Цена: от высокой к низкой",
     "Price: Low to High": "Цена: от низкой к высокой",
+    "Prices are shown at base rates. Click a model name to view prices adjusted by group ratios.": "Цены показаны по базовым ставкам. Нажмите на название модели, чтобы посмотреть цены с учетом коэффициентов групп.",
     "Prices shown per": "Цены указаны за",
     "Prices synced successfully": "Цены успешно синхронизированы",
     "Prices vary by usage tier and request conditions": "Цена зависит от уровня использования и условий запроса",

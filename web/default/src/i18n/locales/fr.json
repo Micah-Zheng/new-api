@@ -2643,6 +2643,7 @@
     "Price:": "Prix :",
     "Price: High to Low": "Prix : Du plus élevé au plus bas",
     "Price: Low to High": "Prix : Du plus bas au plus élevé",
+    "Prices are shown at base rates. Click a model name to view prices adjusted by group ratios.": "Les prix sont affichés aux tarifs de base. Cliquez sur un nom de modèle pour voir les prix ajustés selon les ratios de groupe.",
     "Prices shown per": "Prix affichés par",
     "Prices synced successfully": "Prix synchronisés avec succès",
     "Prices vary by usage tier and request conditions": "Les prix varient selon le palier d’utilisation et les conditions de requête",

@@ -118,6 +118,11 @@ export function Pricing(props: PricingProps) {
         <p className='text-muted-foreground mt-1 text-sm'>
           {t('Browse and compare')} {models?.length || 0} {t('models')}
         </p>
+        <p className='text-muted-foreground mt-2 text-xs'>
+          {t(
+            'Prices are shown at base rates. Click a model name to view prices adjusted by group ratios.'
+          )}
+        </p>
       </header>
 
       <div className='space-y-4'>

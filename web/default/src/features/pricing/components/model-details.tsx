@@ -106,7 +106,6 @@ function PriceSection(props: {
   usdExchangeRate: number
   tokenUnit: TokenUnit
   showRechargePrice: boolean
-  groupRatio: Record<string, number>
 }) {
   const { t } = useTranslation()
   const {
@@ -115,14 +114,11 @@ function PriceSection(props: {
     usdExchangeRate,
     tokenUnit,
     showRechargePrice,
-    groupRatio,
   } = props
   const isTokenBased = isTokenBasedModel(model)
   const tokenUnitLabel = tokenUnit === 'K' ? '1K' : '1M'
-  const defaultGroup = model.enable_groups?.[0] || ''
-  const ratio = defaultGroup ? groupRatio[defaultGroup] || 1 : 1
-  const groupKey = defaultGroup || '_default'
-  const groupRatioMap = { [groupKey]: ratio }
+  const groupKey = '_base'
+  const groupRatioMap = { [groupKey]: 1 }
 
   const priceTypes: { label: string; type: PriceType; available: boolean }[] = [
     { label: t('Input'), type: 'input', available: true },
@@ -563,7 +559,6 @@ export function ModelDetails(props: ModelDetailsProps) {
         usdExchangeRate={usdExchangeRate ?? 1}
         tokenUnit={tokenUnit}
         showRechargePrice={search.rechargePrice ?? false}
-        groupRatio={groupRatio || {}}
       />
 
       <EndpointsSection
