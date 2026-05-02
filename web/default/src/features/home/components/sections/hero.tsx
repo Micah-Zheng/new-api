@@ -1,16 +1,8 @@
-import { Link } from '@tanstack/react-router'
-import { ArrowRight } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useSystemConfig } from '@/hooks/use-system-config'
-import { Button } from '@/components/ui/button'
 import { HeroTerminalDemo } from '../hero-terminal-demo'
 
-interface HeroProps {
-  className?: string
-  isAuthenticated?: boolean
-}
-
-export function Hero(props: HeroProps) {
+export function Hero() {
   const { t } = useTranslation()
   const { systemName } = useSystemConfig()
 
@@ -54,40 +46,11 @@ export function Hero(props: HeroProps) {
             'aggregates 50+ AI providers behind one unified API. Manage access, track costs, and scale effortlessly.'
           )}
         </p>
-        <div
-          className='landing-animate-fade-up mt-8 flex items-center gap-3 opacity-0'
-          style={{ animationDelay: '160ms' }}
-        >
-          {props.isAuthenticated ? (
-            <Button className='group rounded-lg' asChild>
-              <Link to='/dashboard'>
-                {t('Go to Dashboard')}
-                <ArrowRight className='ml-1 size-3.5 transition-transform duration-200 group-hover:translate-x-0.5' />
-              </Link>
-            </Button>
-          ) : (
-            <>
-              <Button className='group rounded-lg' asChild>
-                <Link to='/sign-up'>
-                  {t('Get Started')}
-                  <ArrowRight className='ml-1 size-3.5 transition-transform duration-200 group-hover:translate-x-0.5' />
-                </Link>
-              </Button>
-              <Button
-                variant='outline'
-                className='border-border/50 hover:border-border hover:bg-muted/50 rounded-lg'
-                asChild
-              >
-                <Link to='/pricing'>{t('View Pricing')}</Link>
-              </Button>
-            </>
-          )}
-        </div>
       </div>
 
       <div
         className='landing-animate-fade-up w-full opacity-0'
-        style={{ animationDelay: '300ms' }}
+        style={{ animationDelay: '220ms' }}
       >
         <HeroTerminalDemo />
       </div>

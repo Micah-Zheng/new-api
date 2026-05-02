@@ -1,5 +1,4 @@
 import { useTranslation } from 'react-i18next'
-import { useAuthStore } from '@/stores/auth-store'
 import { Markdown } from '@/components/ui/markdown'
 import { PublicLayout } from '@/components/layout'
 import { Footer } from '@/components/layout/components/footer'
@@ -8,13 +7,11 @@ import { useHomePageContent } from './hooks'
 
 export function Home() {
   const { t } = useTranslation()
-  const { auth } = useAuthStore()
-  const isAuthenticated = !!auth.user
   const { content, isLoaded, isUrl } = useHomePageContent()
 
   if (!isLoaded) {
     return (
-      <PublicLayout showMainContainer={false}>
+      <PublicLayout showMainContainer={false} showAuthButtons={false}>
         <main className='flex min-h-screen items-center justify-center'>
           <div className='text-muted-foreground'>{t('Loading...')}</div>
         </main>
@@ -24,7 +21,7 @@ export function Home() {
 
   if (content) {
     return (
-      <PublicLayout showMainContainer={false}>
+      <PublicLayout showMainContainer={false} showAuthButtons={false}>
         <main className='overflow-x-hidden'>
           {isUrl ? (
             <iframe
@@ -43,12 +40,12 @@ export function Home() {
   }
 
   return (
-    <PublicLayout showMainContainer={false}>
-      <Hero isAuthenticated={isAuthenticated} />
+    <PublicLayout showMainContainer={false} showAuthButtons={false}>
+      <Hero />
       <Stats />
       <Features />
       <HowItWorks />
-      <CTA isAuthenticated={isAuthenticated} />
+      <CTA />
       <Footer />
     </PublicLayout>
   )
