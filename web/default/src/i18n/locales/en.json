@@ -3927,6 +3927,8 @@
     "{{count}} generations": "{{count}} generations",
     "Prompt copied": "Prompt copied",
     "Size": "Size",
-    "Count": "Count"
+    "Count": "Count",
+    "API Key": "API Key",
+    "API Key is required": "API Key is required"
   }
 }

@@ -1,21 +1,30 @@
-import { api, getCommonHeaders } from '@/lib/api'
 import type { ImageGenRequest, ImageGenResponse } from './types'
 
 export async function generateImage(
   request: ImageGenRequest,
-  group: string
+  group: string,
+  apiKey: string
 ): Promise<ImageGenResponse> {
   const headers: Record<string, string> = {
-    ...getCommonHeaders(),
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${apiKey}`,
   }
   if (group && group !== 'auto') {
     headers['X-New-Api-Group'] = group
   }
 
-  const res = await api.post('/v1/images/generations', request, {
+  const res = await fetch('/v1/images/generations', {
+    method: 'POST',
     headers,
-    skipErrorHandler: true,
-    skipBusinessError: true,
-  } as Record<string, unknown>)
-  return res.data
+    body: JSON.stringify(request),
+  })
+
+  const data = await res.json()
+
+  if (!res.ok) {
+    const msg = data?.error?.message || data?.message || `HTTP ${res.status}`
+    throw new Error(msg)
+  }
+
+  return data
 }

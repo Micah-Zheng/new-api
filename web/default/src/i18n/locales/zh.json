@@ -3927,6 +3927,8 @@
     "{{count}} generations": "{{count}} 次生成",
     "Prompt copied": "提示词已复制",
     "Size": "尺寸",
-    "Count": "数量"
+    "Count": "数量",
+    "API Key": "API 密钥",
+    "API Key is required": "请输入 API Key"
   }
 }

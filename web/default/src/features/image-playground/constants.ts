@@ -12,6 +12,7 @@ export const DEFAULT_CONFIG: ImageGenConfig = {
   quality: 'auto',
   n: 1,
   outputFormat: 'png',
+  apiKey: '',
 }
 
 export const SIZE_OPTIONS = [

@@ -5,6 +5,7 @@ export interface ImageGenConfig {
   quality: string
   n: number
   outputFormat: string
+  apiKey: string
 }
 
 export interface GeneratedImage {

@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import { toast } from 'sonner'
 import { getUserModels, getUserGroups } from '@/lib/api'
 import { generateImage } from '../api'
 import { DEFAULT_CONFIG, STORAGE_KEYS, MAX_TASKS_STORED } from '../constants'
@@ -70,6 +71,10 @@ export function useImagePlayground() {
   const generate = useCallback(
     async (prompt: string) => {
       if (!prompt.trim() || generating) return
+      if (!config.apiKey) {
+        toast.error('Please enter your API Key')
+        return
+      }
 
       const taskId = crypto.randomUUID()
       const task: ImageTask = {
@@ -100,7 +105,7 @@ export function useImagePlayground() {
         if (config.quality !== 'auto') request.quality = config.quality
         if (config.outputFormat !== 'png') request.output_format = config.outputFormat
 
-        const response = await generateImage(request, config.group)
+        const response = await generateImage(request, config.group, config.apiKey)
         const elapsed = Date.now() - startTime
 
         if (!response.data || !Array.isArray(response.data) || response.data.length === 0) {
@@ -120,8 +125,17 @@ export function useImagePlayground() {
         )
       } catch (err: unknown) {
         const elapsed = Date.now() - startTime
-        const message =
-          err instanceof Error ? err.message : 'Unknown error'
+        let message = 'Unknown error'
+        if (err && typeof err === 'object') {
+          const axiosErr = err as { response?: { data?: { error?: { message?: string }; message?: string }; status?: number }; message?: string }
+          if (axiosErr.response?.data?.error?.message) {
+            message = axiosErr.response.data.error.message
+          } else if (axiosErr.response?.data?.message) {
+            message = axiosErr.response.data.message
+          } else if (axiosErr.message) {
+            message = axiosErr.message
+          }
+        }
 
         setTasks((prev) =>
           prev.map((t) =>
