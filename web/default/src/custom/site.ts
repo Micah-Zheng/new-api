@@ -1,4 +1,4 @@
-import { Activity, Store, type LucideIcon } from 'lucide-react'
+import { Activity, Image, Store, type LucideIcon } from 'lucide-react'
 
 type CustomSidebarLink = {
   titleKey: string
@@ -24,6 +24,11 @@ export const customSidebarLinks: CustomSidebarLink[] = [
     titleKey: 'Status Monitor',
     url: '/status-monitor',
     icon: Activity,
+  },
+  {
+    titleKey: 'AI 绘图',
+    url: '/image-playground',
+    icon: Image,
   },
 ]
 
