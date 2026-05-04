@@ -3919,6 +3919,14 @@
     "No recharge discounts configured": "No recharge discounts configured",
     "Zhipu": "Zhipu",
     "Zhipu V4": "Zhipu V4",
-    "Zoom": "Zoom"
+    "Zoom": "Zoom",
+    "AI Drawing": "AI Drawing",
+    "Describe the image you want to generate...": "Describe the image you want to generate...",
+    "Enter a prompt and click Generate to create images": "Enter a prompt and click Generate to create images",
+    "Generate": "Generate",
+    "{{count}} generations": "{{count}} generations",
+    "Prompt copied": "Prompt copied",
+    "Size": "Size",
+    "Count": "Count"
   }
 }

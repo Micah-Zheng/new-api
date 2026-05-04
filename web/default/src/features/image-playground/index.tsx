@@ -1,0 +1,97 @@
+import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { Settings2 } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { Separator } from '@/components/ui/separator'
+import { useImagePlayground } from './hooks'
+import { PromptInput } from './components/prompt-input'
+import { ParamsPanel } from './components/params-panel'
+import { ImageGallery } from './components/image-gallery'
+
+export function ImagePlayground() {
+  const { t } = useTranslation()
+  const {
+    config,
+    setConfig,
+    tasks,
+    generating,
+    models,
+    groups,
+    generate,
+    retry,
+    removeTask,
+    clearHistory,
+  } = useImagePlayground()
+
+  const [prompt, setPrompt] = useState('')
+  const [showParams, setShowParams] = useState(true)
+
+  const handleSubmit = (text: string) => {
+    if (!text.trim()) return
+    generate(text)
+    setPrompt('')
+  }
+
+  return (
+    <div className='flex h-full'>
+      {/* Left panel - Input */}
+      <div className='hidden w-80 shrink-0 flex-col border-r md:flex'>
+        <div className='flex items-center justify-between px-4 pt-4 pb-2'>
+          <h2 className='text-sm font-medium'>{t('AI Drawing')}</h2>
+          <Button
+            variant='ghost'
+            size='icon'
+            className='size-7'
+            onClick={() => setShowParams((v) => !v)}
+          >
+            <Settings2 className='size-4' />
+          </Button>
+        </div>
+        <ScrollArea className='flex-1 px-4 pb-4'>
+          <div className='flex flex-col gap-4'>
+            <PromptInput
+              prompt={prompt}
+              onPromptChange={setPrompt}
+              onSubmit={handleSubmit}
+              generating={generating}
+            />
+            {showParams && (
+              <>
+                <Separator />
+                <ParamsPanel
+                  config={config}
+                  onConfigChange={setConfig}
+                  models={models}
+                  groups={groups}
+                />
+              </>
+            )}
+          </div>
+        </ScrollArea>
+      </div>
+
+      {/* Mobile input */}
+      <div className='fixed right-0 bottom-0 left-0 z-10 border-t bg-background p-3 md:hidden'>
+        <PromptInput
+          prompt={prompt}
+          onPromptChange={setPrompt}
+          onSubmit={handleSubmit}
+          generating={generating}
+        />
+      </div>
+
+      {/* Right panel - Gallery */}
+      <ScrollArea className='flex-1'>
+        <div className='mx-auto max-w-4xl p-4 pb-24 md:pb-4'>
+          <ImageGallery
+            tasks={tasks}
+            onRemove={removeTask}
+            onRetry={retry}
+            onClearHistory={clearHistory}
+          />
+        </div>
+      </ScrollArea>
+    </div>
+  )
+}

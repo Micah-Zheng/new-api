@@ -3919,6 +3919,14 @@
     "No recharge discounts configured": "暂无充值优惠配置",
     "Zhipu": "智谱",
     "Zhipu V4": "智谱 V4",
-    "Zoom": "缩放"
+    "Zoom": "缩放",
+    "AI Drawing": "AI 绘图",
+    "Describe the image you want to generate...": "描述你想生成的图片...",
+    "Enter a prompt and click Generate to create images": "输入提示词并点击生成来创建图片",
+    "Generate": "生成",
+    "{{count}} generations": "{{count}} 次生成",
+    "Prompt copied": "提示词已复制",
+    "Size": "尺寸",
+    "Count": "数量"
   }
 }
