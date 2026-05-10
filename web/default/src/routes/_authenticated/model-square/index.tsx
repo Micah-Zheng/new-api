@@ -1,6 +1,6 @@
 import z from 'zod'
 import { createFileRoute } from '@tanstack/react-router'
-import { AppHeader, Main } from '@/components/layout'
+import { Main } from '@/components/layout'
 import { Pricing } from '@/features/pricing'
 
 const modelSquareSearchSchema = z.object({
@@ -23,16 +23,13 @@ export const Route = createFileRoute('/_authenticated/model-square/')({
 
 function ModelSquare() {
   return (
-    <>
-      <AppHeader />
-      <Main className='overflow-auto py-3 sm:py-4'>
-        <Pricing
-          embedded
-          heroMode='compact'
-          routeTo='/model-square'
-          detailPath='/model-square/$modelId'
-        />
-      </Main>
-    </>
+    <Main className='overflow-auto py-3 sm:py-4'>
+      <Pricing
+        embedded
+        heroMode='compact'
+        routeTo='/model-square'
+        detailPath='/model-square/$modelId'
+      />
+    </Main>
   )
 }
