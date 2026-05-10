@@ -107,7 +107,7 @@ export function WorkspaceSwitcher({
     // Only navigate, let useEffect synchronize workspace state based on new pathname
     // This avoids race conditions and context loss issues
     if (workspace.id === WORKSPACE_IDS.SYSTEM_SETTINGS) {
-      navigate({ to: '/system-settings/general' })
+      navigate({ to: '/system-settings/site/$section', params: { section: 'system-info' } })
     } else {
       navigate({ to: '/dashboard' })
     }
@@ -150,13 +150,15 @@ export function WorkspaceSwitcher({
       <SidebarMenuItem>
         {canSwitchWorkspace ? (
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <SidebarMenuButton
-                size='lg'
-                className='data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground'
-              >
-                {workspaceButtonContent}
-              </SidebarMenuButton>
+            <DropdownMenuTrigger
+              render={
+                <SidebarMenuButton
+                  size='lg'
+                  className='data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground'
+                />
+              }
+            >
+              {workspaceButtonContent}
             </DropdownMenuTrigger>
             <DropdownMenuContent
               className='w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg'
@@ -193,11 +195,11 @@ export function WorkspaceSwitcher({
           </DropdownMenu>
         ) : (
           <SidebarMenuButton
-            asChild
             size='lg'
             className='cursor-default hover:bg-transparent hover:text-sidebar-foreground active:bg-transparent active:text-sidebar-foreground'
+            render={<div />}
           >
-            <div>{workspaceButtonContent}</div>
+            {workspaceButtonContent}
           </SidebarMenuButton>
         )}
       </SidebarMenuItem>

@@ -341,7 +341,7 @@ export function RechargeFormCard({
                         return disabled ? (
                           <TooltipProvider key={method.type}>
                             <Tooltip>
-                              <TooltipTrigger asChild>{button}</TooltipTrigger>
+                              <TooltipTrigger render={button}></TooltipTrigger>
                               <TooltipContent>
                                 {t('Minimum topup amount: {{amount}}', {
                                   amount: minTopup,
@@ -404,8 +404,7 @@ export function RechargeFormCard({
                           return belowMin ? (
                             <TooltipProvider key={`${method.name}-${index}`}>
                               <Tooltip>
-                                <TooltipTrigger asChild>
-                                  {button}
+                                <TooltipTrigger render={button}>
                                 </TooltipTrigger>
                                 <TooltipContent>
                                   {t('Minimum topup amount: {{amount}}', {
