@@ -43,13 +43,13 @@ function formatUptimeDuration(
   const parts: string[] = []
 
   if (days > 0) {
-    parts.push(`${days} ${t(days === 1 ? 'Day' : 'days')}`)
+    parts.push(`${days}d`)
   }
   if (hours > 0) {
-    parts.push(`${hours} ${t(hours === 1 ? 'Hour' : 'hours')}`)
+    parts.push(`${hours}h`)
   }
   if (minutes > 0 || parts.length === 0) {
-    parts.push(`${minutes} ${t(minutes === 1 ? 'Minute' : 'minutes')}`)
+    parts.push(`${minutes}m`)
   }
 
   return parts.join(' ')
@@ -196,7 +196,7 @@ export function UptimePanel() {
                     </div>
                   </div>
                 </div>
-                <span className='text-foreground shrink-0 font-mono text-sm font-semibold tabular-nums'>
+                <span className='text-foreground shrink-0 font-mono text-sm tabular-nums'>
                   {row.value}
                 </span>
               </div>
