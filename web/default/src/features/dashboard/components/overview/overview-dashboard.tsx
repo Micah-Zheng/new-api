@@ -726,7 +726,7 @@ export function OverviewDashboard() {
             <FAQPanel />
           </CardStaggerItem>
         </div>
-        <CardStaggerItem>
+        <CardStaggerItem className='h-full'>
           <UptimePanel />
         </CardStaggerItem>
       </CardStaggerContainer>
