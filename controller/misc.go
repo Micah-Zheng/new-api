@@ -4,7 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/QuantumNous/new-api/common"
 	"github.com/QuantumNous/new-api/constant"
@@ -39,6 +42,22 @@ func TestStatus(c *gin.Context) {
 	return
 }
 
+func getHostBootTime() int64 {
+	data, err := os.ReadFile("/proc/uptime")
+	if err != nil {
+		return 0
+	}
+	fields := strings.Fields(string(data))
+	if len(fields) == 0 {
+		return 0
+	}
+	uptimeSeconds, err := strconv.ParseFloat(fields[0], 64)
+	if err != nil {
+		return 0
+	}
+	return time.Now().Unix() - int64(uptimeSeconds)
+}
+
 func GetStatus(c *gin.Context) {
 
 	cs := console_setting.GetConsoleSetting()
@@ -51,6 +70,7 @@ func GetStatus(c *gin.Context) {
 	data := gin.H{
 		"version":                     common.Version,
 		"start_time":                  common.StartTime,
+		"host_boot_time":              getHostBootTime(),
 		"email_verification":          common.EmailVerificationEnabled,
 		"github_oauth":                common.GitHubOAuthEnabled,
 		"github_client_id":            common.GitHubClientId,

@@ -118,12 +118,18 @@ export function UptimePanel() {
     (status?.start_time as number | undefined) ??
     (status?.data?.start_time as number | undefined)
 
+  const hostBootTime =
+    (status?.host_boot_time as number | undefined) ??
+    (status?.data?.host_boot_time as number | undefined)
+
   const runtimeCard = useMemo(
     () => ({
       value: formatUptimeDuration(startTime, nowMs, t),
       since: startTime ? formatTimestampToDate(startTime) : t('Unknown'),
+      hostValue: formatUptimeDuration(hostBootTime, nowMs, t),
+      hostSince: hostBootTime ? formatTimestampToDate(hostBootTime) : t('Unknown'),
     }),
-    [nowMs, startTime, t]
+    [nowMs, startTime, hostBootTime, t]
   )
 
   return (
@@ -179,6 +185,33 @@ export function UptimePanel() {
             <p className='text-muted-foreground/80 mt-2 text-sm'>
               {t('Uptime since')} {runtimeCard.since}
             </p>
+
+            <div className='border-border/20 mt-4 grid grid-cols-2 gap-3 border-t pt-4'>
+              <div>
+                <div className='text-muted-foreground/50 mb-0.5 text-[10px] font-medium tracking-[0.18em] uppercase'>
+                  {t('Service')}
+                </div>
+                <div className='text-foreground/80 font-mono text-sm font-semibold tabular-nums'>
+                  {runtimeCard.value}
+                </div>
+                <div className='text-muted-foreground/50 mt-0.5 text-[10px]'>
+                  {t('since')} {runtimeCard.since}
+                </div>
+              </div>
+              {runtimeCard.hostValue && runtimeCard.hostValue !== t('Unknown') && (
+                <div>
+                  <div className='text-muted-foreground/50 mb-0.5 text-[10px] font-medium tracking-[0.18em] uppercase'>
+                    {t('Host')}
+                  </div>
+                  <div className='text-foreground/80 font-mono text-sm font-semibold tabular-nums'>
+                    {runtimeCard.hostValue}
+                  </div>
+                  <div className='text-muted-foreground/50 mt-0.5 text-[10px]'>
+                    {t('since')} {runtimeCard.hostSince}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
