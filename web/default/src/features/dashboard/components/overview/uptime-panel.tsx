@@ -142,8 +142,7 @@ export function UptimePanel() {
       }
       description={t('Grouped monitor status from Uptime Kuma')}
       loading={loading}
-      height='h-80'
-      contentClassName='p-0'
+      contentClassName='p-0 min-h-64'
       headerActions={
         <Button
           variant='ghost'
