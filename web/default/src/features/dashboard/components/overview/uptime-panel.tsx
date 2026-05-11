@@ -160,62 +160,55 @@ export function UptimePanel() {
       }
     >
       <div className='space-y-5'>
-        <div className='relative overflow-hidden rounded-2xl border border-cyan-500/20 bg-background/85 px-4 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.04),0_0_28px_rgba(34,211,238,0.08)] backdrop-blur-sm sm:px-5 sm:py-5'>
-          <div className='from-border/0 via-cyan-400/70 to-border/0 absolute inset-x-8 top-0 h-px bg-gradient-to-r' />
-          <div className='absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-transparent to-sky-500/10 opacity-90' />
-          <div className='absolute -top-10 right-0 h-28 w-28 rounded-full bg-cyan-400/10 blur-3xl' />
-          <div className='absolute -bottom-12 left-8 h-28 w-28 rounded-full bg-sky-500/10 blur-3xl' />
-
-          <div className='relative'>
-            <div className='mb-3 flex items-start justify-between gap-3'>
-              <div className='text-muted-foreground flex items-center gap-2 text-[11px] font-medium tracking-[0.22em] uppercase'>
-                <Activity className='size-4 text-cyan-300/80' />
-                {t('Uptime')}
-              </div>
-              <div className='rounded-full border border-cyan-400/20 bg-cyan-400/10 px-2 py-1 font-mono text-[10px] tracking-[0.24em] text-cyan-200 uppercase'>
-                Live
-              </div>
-            </div>
-
-            <div className='bg-gradient-to-r from-cyan-100 via-white to-sky-200 bg-clip-text font-mono text-4xl font-black tracking-tight text-transparent drop-shadow-[0_0_18px_rgba(56,189,248,0.18)] sm:text-5xl'>
-              {runtimeCard.value}
-            </div>
-            <p className='text-muted-foreground/80 mt-2 text-sm'>
-              {t('Uptime since')} {runtimeCard.since}
-            </p>
-
-            <div className='border-border/20 mt-4 grid grid-cols-2 gap-3 border-t pt-4'>
-              <div>
-                <div className='text-muted-foreground/50 mb-0.5 text-[10px] font-medium tracking-[0.18em] uppercase'>
-                  {t('Service')}
-                </div>
-                <div className='text-foreground/80 font-mono text-sm font-semibold tabular-nums'>
-                  {runtimeCard.value}
-                </div>
-                <div className='text-muted-foreground/50 mt-0.5 text-[10px]'>
-                  {t('since')} {runtimeCard.since}
-                </div>
-              </div>
-              {runtimeCard.hostValue && runtimeCard.hostValue !== t('Unknown') && (
-                <div>
-                  <div className='text-muted-foreground/50 mb-0.5 text-[10px] font-medium tracking-[0.18em] uppercase'>
-                    {t('Host')}
-                  </div>
-                  <div className='text-foreground/80 font-mono text-sm font-semibold tabular-nums'>
-                    {runtimeCard.hostValue}
-                  </div>
-                  <div className='text-muted-foreground/50 mt-0.5 text-[10px]'>
-                    {t('since')} {runtimeCard.hostSince}
+        <div className='space-y-1'>
+          {[
+            {
+              label: t('Service'),
+              value: runtimeCard.value,
+              since: runtimeCard.since,
+              icon: Activity,
+            },
+            ...(runtimeCard.hostValue && runtimeCard.hostValue !== t('Unknown')
+              ? [
+                  {
+                    label: t('Host'),
+                    value: runtimeCard.hostValue,
+                    since: runtimeCard.hostSince,
+                    icon: Activity,
+                  },
+                ]
+              : []),
+          ].map((row, idx) => {
+            const Icon = row.icon
+            return (
+              <div
+                key={idx}
+                className='hover:bg-muted/40 flex items-center justify-between px-4 py-2.5 transition-colors sm:px-5'
+              >
+                <div className='flex min-w-0 items-center gap-2.5'>
+                  <Icon className='text-muted-foreground/50 size-3.5 shrink-0' />
+                  <div className='min-w-0'>
+                    <div className='text-muted-foreground text-xs font-medium'>
+                      {row.label}
+                    </div>
+                    <div className='text-muted-foreground/50 text-[10px]'>
+                      {t('since')} {row.since}
+                    </div>
                   </div>
                 </div>
-              )}
-            </div>
-          </div>
+                <span className='text-foreground shrink-0 font-mono text-sm font-semibold tabular-nums'>
+                  {row.value}
+                </span>
+              </div>
+            )
+          })}
         </div>
 
         {groups.length ? (
-          <ScrollArea className='h-44'>
-            <div className='-mx-4 space-y-0 sm:-mx-5'>
+          <>
+            <div className='border-border/60 border-t' />
+            <ScrollArea className='h-44'>
+              <div className='-mx-4 space-y-0 sm:-mx-5'>
               {groups.map((group, groupIdx) => (
                 <div key={group.categoryName}>
                   <div className='bg-muted/30 border-border/60 border-b px-4 py-2 sm:px-5'>
@@ -261,11 +254,8 @@ export function UptimePanel() {
               ))}
             </div>
           </ScrollArea>
-        ) : (
-          <div className='text-muted-foreground flex h-20 items-center justify-center text-sm'>
-            {t('No uptime monitoring configured')}
-          </div>
-        )}
+          </>
+        ) : null}
       </div>
     </PanelWrapper>
   )
