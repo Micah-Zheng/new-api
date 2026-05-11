@@ -463,6 +463,14 @@ docker build -t "$IMAGE" .
 echo "$IMAGE" > "$HOME/.new-api-last-custom-image"
 ```
 
+> **关于 `--no-cache`**：正常部署**不要加** `--no-cache`。Docker 会自动复用未变化的层（依赖安装、Go 编译等），只重建真正改动的部分。
+>
+> 只有以下情况才需要 `--no-cache`：
+> - 怀疑 Docker 缓存损坏导致构建结果不正确
+> - 需要强制拉取最新基础镜像（安全更新等）
+>
+> 频繁使用 `--no-cache` 会导致每次构建产生 10GB+ 的 build cache，快速占满磁盘。
+
 然后更新生产 compose：
 
 ```bash
@@ -482,13 +490,14 @@ from pathlib import Path
 image = "$IMAGE"
 path = Path("docker-compose.yml")
 text = path.read_text()
-old = "    image: calciumion/new-api:latest"
-new = f"    image: {image}"
-if old not in text and new not in text:
-    raise SystemExit("expected image line not found")
-if old in text:
-    text = text.replace(old, new, 1)
-path.write_text(text)
+lines = text.splitlines()
+for idx, line in enumerate(lines):
+    if line.strip().startswith("image:") and "new-api" in line:
+        lines[idx] = f"    image: {image}"
+        break
+else:
+    raise SystemExit("new-api image line not found")
+path.write_text("\n".join(lines) + "\n")
 PY
 
 sudo docker compose up -d new-api
