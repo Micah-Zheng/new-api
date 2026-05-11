@@ -142,8 +142,6 @@ export function UptimePanel() {
       }
       description={t('Grouped monitor status from Uptime Kuma')}
       loading={loading}
-      empty={!groups.length}
-      emptyMessage={t('No uptime monitoring configured')}
       height='h-80'
       contentClassName='p-0'
       headerActions={
