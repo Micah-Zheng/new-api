@@ -76,7 +76,7 @@ export function useFilters(
       firstString(search.view) === VIEW_MODES.TABLE
         ? VIEW_MODES.TABLE
         : undefined,
-    rechargePrice: search.rechargePrice,
+    rechargePrice: search.rechargePrice as boolean | undefined,
   }))
 
   const searchInput = filterState.search || ''
