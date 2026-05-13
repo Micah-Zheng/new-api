@@ -576,6 +576,26 @@ For commercial licensing, please contact support@quantumnous.com
   animation: terminal-demo-pulse 1.5s ease-in-out infinite;
 }
 
+.ink-voyage-footer {
+  border-color: rgb(216 200 171 / 0.34);
+  background: #10171b;
+  color: #fff;
+}
+
+.ink-voyage-footer .text-muted-foreground,
+.ink-voyage-footer .text-foreground {
+  color: rgb(255 255 255 / 0.64);
+}
+
+.ink-voyage-footer a,
+.ink-voyage-footer .font-semibold {
+  color: rgb(255 255 255 / 0.86);
+}
+
+.ink-voyage-footer a:hover {
+  color: #fff;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .terminal-demo-blink,
   .terminal-demo-spin,
