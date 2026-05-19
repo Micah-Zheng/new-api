@@ -264,6 +264,10 @@ func SearchUsers(c *gin.Context) {
 	return
 }
 
+func canManageTargetRole(myRole int, targetRole int) bool {
+	return myRole == common.RoleRootUser || myRole > targetRole
+}
+
 func GetUser(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -276,7 +280,7 @@ func GetUser(c *gin.Context) {
 		return
 	}
 	myRole := c.GetInt("role")
-	if myRole <= user.Role && !common.HasRootPermission(myRole) {
+	if !canManageTargetRole(myRole, user.Role) {
 		common.ApiErrorI18n(c, i18n.MsgUserNoPermissionSameLevel)
 		return
 	}
@@ -435,10 +439,18 @@ func calculateUserPermissions(userRole int) map[string]interface{} {
 	permissions := map[string]interface{}{}
 
 	// 根据用户角色计算权限
-	if common.HasRootPermission(userRole) {
+	if userRole == common.RoleRootUser {
 		// 超级管理员不需要边栏设置功能
 		permissions["sidebar_settings"] = false
 		permissions["sidebar_modules"] = map[string]interface{}{}
+	} else if userRole == common.RoleAdminUser {
+		// 管理员可以设置边栏，但不包含系统设置功能
+		permissions["sidebar_settings"] = true
+		permissions["sidebar_modules"] = map[string]interface{}{
+			"admin": map[string]interface{}{
+				"setting": false, // 管理员不能访问系统设置
+			},
+		}
 	} else {
 		// 普通用户只能设置个人功能，不包含管理员区域
 		permissions["sidebar_settings"] = true
@@ -479,8 +491,18 @@ func generateDefaultSidebarConfig(userRole int) string {
 	}
 
 	// 管理员区域 - 根据角色决定
-	if common.HasRootPermission(userRole) {
-		// 管理员和超级管理员都可以访问所有管理功能
+	if userRole == common.RoleAdminUser {
+		// 管理员可以访问管理员区域，但不能访问系统设置
+		defaultConfig["admin"] = map[string]interface{}{
+			"enabled":    true,
+			"channel":    true,
+			"models":     true,
+			"redemption": true,
+			"user":       true,
+			"setting":    false, // 管理员不能访问系统设置
+		}
+	} else if userRole == common.RoleRootUser {
+		// 超级管理员可以访问所有功能
 		defaultConfig["admin"] = map[string]interface{}{
 			"enabled":    true,
 			"channel":    true,
@@ -549,11 +571,11 @@ func UpdateUser(c *gin.Context) {
 		return
 	}
 	myRole := c.GetInt("role")
-	if myRole <= originUser.Role && !common.HasRootPermission(myRole) {
+	if !canManageTargetRole(myRole, originUser.Role) {
 		common.ApiErrorI18n(c, i18n.MsgUserNoPermissionHigherLevel)
 		return
 	}
-	if myRole <= updatedUser.Role && !common.HasRootPermission(myRole) {
+	if !canManageTargetRole(myRole, updatedUser.Role) {
 		common.ApiErrorI18n(c, i18n.MsgUserCannotCreateHigherLevel)
 		return
 	}
@@ -592,7 +614,7 @@ func AdminClearUserBinding(c *gin.Context) {
 	}
 
 	myRole := c.GetInt("role")
-	if myRole <= user.Role && !common.HasRootPermission(myRole) {
+	if !canManageTargetRole(myRole, user.Role) {
 		common.ApiErrorI18n(c, i18n.MsgUserNoPermissionSameLevel)
 		return
 	}
@@ -754,18 +776,20 @@ func DeleteUser(c *gin.Context) {
 		return
 	}
 	myRole := c.GetInt("role")
-	if myRole <= originUser.Role && !common.HasRootPermission(myRole) {
+	if myRole <= originUser.Role {
 		common.ApiErrorI18n(c, i18n.MsgUserNoPermissionHigherLevel)
 		return
 	}
 	err = model.HardDeleteUserById(id)
 	if err != nil {
-		c.JSON(http.StatusOK, gin.H{
-			"success": true,
-			"message": "",
-		})
+		common.ApiError(c, err)
 		return
 	}
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "",
+	})
+	return
 }
 
 func DeleteSelf(c *gin.Context) {
@@ -805,7 +829,7 @@ func CreateUser(c *gin.Context) {
 		user.DisplayName = user.Username
 	}
 	myRole := c.GetInt("role")
-	if user.Role >= myRole && !common.HasRootPermission(myRole) {
+	if user.Role >= myRole {
 		common.ApiErrorI18n(c, i18n.MsgUserCannotCreateHigherLevel)
 		return
 	}
@@ -854,7 +878,7 @@ func ManageUser(c *gin.Context) {
 		return
 	}
 	myRole := c.GetInt("role")
-	if myRole <= user.Role && !common.HasRootPermission(myRole) {
+	if !canManageTargetRole(myRole, user.Role) {
 		common.ApiErrorI18n(c, i18n.MsgUserNoPermissionHigherLevel)
 		return
 	}
@@ -885,7 +909,7 @@ func ManageUser(c *gin.Context) {
 			common.SysLog(fmt.Sprintf("failed to invalidate tokens cache for user %d: %s", user.Id, err.Error()))
 		}
 	case "promote":
-		if !common.HasRootPermission(myRole) {
+		if myRole != common.RoleRootUser {
 			common.ApiErrorI18n(c, i18n.MsgUserAdminCannotPromote)
 			return
 		}
