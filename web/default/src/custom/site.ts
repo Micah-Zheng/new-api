@@ -1,4 +1,4 @@
-import { Activity, ShieldCheck, Store, type LucideIcon } from 'lucide-react'
+import { Activity, Store, type LucideIcon } from 'lucide-react'
 
 type CustomSidebarLink = {
   titleKey: string
@@ -24,11 +24,6 @@ export const customSidebarLinks: CustomSidebarLink[] = [
     titleKey: 'Status Monitor',
     url: '/status-monitor',
     icon: Activity,
-  },
-  {
-    titleKey: 'API Verification',
-    url: '/api-verify',
-    icon: ShieldCheck,
   },
 ]
 
