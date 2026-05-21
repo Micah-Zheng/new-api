@@ -95,6 +95,11 @@ type ModelRow = {
   billingExpr?: string
   requestRuleExpr?: string
   hasConflict: boolean
+  // Per-resolution pricing
+  price1k?: string
+  price2k?: string
+  price4k?: string
+  perRequestSubMode?: 'fixed' | 'per-resolution'
 }
 
 const STORAGE_KEY = 'model-ratio-column-visibility'
@@ -334,6 +339,15 @@ export const ModelRatioVisualEditor = memo(
         const audio = audioMap[name]?.toString() || ''
         const audioCompletion = audioCompletionMap[name]?.toString() || ''
 
+        // Read per-resolution config from image_model_setting
+        type ImgCfg = { billing_mode?: string; price_1k?: number; price_2k?: number; price_4k?: number }
+        const imgSetting = safeJsonParse<{ models?: Record<string, ImgCfg> }>(
+          imageModelSetting,
+          { fallback: { models: {} }, silent: true }
+        )
+        const imgCfg: ImgCfg | undefined = imgSetting.models?.[name]
+        const isPerResolution = imgCfg?.billing_mode === 'per_size'
+
         const modeForModel = billingModeMap[name]
         if (modeForModel === 'tiered_expr') {
           // Tiered_expr models may also retain ratio/price values as fallback
@@ -370,6 +384,10 @@ export const ModelRatioVisualEditor = memo(
           audioRatio: audio,
           audioCompletionRatio: audioCompletion,
           billingMode: price !== '' ? 'per-request' : 'per-token',
+          perRequestSubMode: isPerResolution ? 'per-resolution' : 'fixed',
+          price1k: imgCfg?.price_1k != null ? String(imgCfg.price_1k) : '',
+          price2k: imgCfg?.price_2k != null ? String(imgCfg.price_2k) : '',
+          price4k: imgCfg?.price_4k != null ? String(imgCfg.price_4k) : '',
           hasConflict:
             price !== '' &&
             (ratio !== '' ||
@@ -394,6 +412,7 @@ export const ModelRatioVisualEditor = memo(
       audioCompletionRatio,
       billingMode,
       billingExpr,
+      imageModelSetting,
     ])
 
     const modeCounts = useMemo(
@@ -437,6 +456,10 @@ export const ModelRatioVisualEditor = memo(
                 : 'per-token',
           billingExpr: model.billingExpr,
           requestRuleExpr: model.requestRuleExpr,
+          price1k: model.price1k,
+          price2k: model.price2k,
+          price4k: model.price4k,
+          perRequestSubMode: model.perRequestSubMode,
         })
         setEditorOpen(true)
         if (isMobile) setSheetOpen(true)
@@ -793,6 +816,11 @@ export const ModelRatioVisualEditor = memo(
             setIfPresent(imageMap, name, data.imageRatio)
             setIfPresent(audioMap, name, data.audioRatio)
             setIfPresent(audioCompletionMap, name, data.audioCompletionRatio)
+          } else if (data.billingMode === 'per-request' && data.perRequestSubMode === 'per-resolution') {
+            // Per-resolution billing: write a sentinel price of 0 so the UI
+            // shows "Per-request" mode. The actual per-image prices are stored
+            // in image_model_setting and read by the backend billing engine.
+            priceMap[name] = 0
           } else if (data.price && data.price !== '') {
             setIfPresent(priceMap, name, data.price)
           } else {
