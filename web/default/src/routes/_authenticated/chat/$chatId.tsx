@@ -67,7 +67,7 @@ function ChatRouteComponent() {
     if (requiresActiveKey && !activeKey) return ''
     return resolveChatUrl({
       template: preset.url,
-      apiKey: requiresActiveKey ? activeKey : undefined,
+      apiKey: requiresActiveKey ? activeKey?.key : undefined,
       serverAddress,
     })
   }, [activeKey, isWebLink, preset, requiresActiveKey, serverAddress])

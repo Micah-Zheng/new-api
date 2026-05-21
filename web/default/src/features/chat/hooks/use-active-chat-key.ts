@@ -21,6 +21,12 @@ import { useAuthStore } from '@/stores/auth-store'
 import { fetchTokenKey, getApiKeys, searchApiKeys, createApiKey } from '@/features/keys/api'
 import { API_KEY_STATUS } from '@/features/keys/constants'
 
+export type ActiveChatKeyResult = {
+  key: string
+  /** true when the key was just auto-created (did not exist before this call) */
+  isNewlyCreated: boolean
+}
+
 /**
  * Fetch (or auto-create) a dedicated API key for a specific chat preset.
  *
@@ -34,7 +40,7 @@ import { API_KEY_STATUS } from '@/features/keys/constants'
  * When `dedicatedKeyName` is omitted the legacy behaviour is preserved:
  *   pick the first enabled key in the list.
  */
-export async function fetchActiveChatKey(dedicatedKeyName?: string) {
+export async function fetchActiveChatKey(dedicatedKeyName?: string): Promise<ActiveChatKeyResult> {
   if (dedicatedKeyName) {
     // --- Dedicated-key path ---
     const searchResult = await searchApiKeys({ keyword: dedicatedKeyName, p: 1, size: 10 })
@@ -56,7 +62,7 @@ export async function fetchActiveChatKey(dedicatedKeyName?: string) {
       if (!keyResult.success || !keyResult.data?.key) {
         throw new Error(keyResult.message || 'Failed to load API key')
       }
-      return `sk-${keyResult.data.key}`
+      return { key: `sk-${keyResult.data.key}`, isNewlyCreated: false }
     }
 
     // Not found — auto-create a dedicated key for this preset
@@ -89,7 +95,7 @@ export async function fetchActiveChatKey(dedicatedKeyName?: string) {
     if (!keyResult.success || !keyResult.data?.key) {
       throw new Error(keyResult.message || 'Failed to load API key')
     }
-    return `sk-${keyResult.data.key}`
+    return { key: `sk-${keyResult.data.key}`, isNewlyCreated: true }
   }
 
   // --- Legacy path: pick the first enabled key ---
@@ -109,7 +115,7 @@ export async function fetchActiveChatKey(dedicatedKeyName?: string) {
     throw new Error(keyResult.message || 'Failed to load API key')
   }
 
-  return `sk-${keyResult.data.key}`
+  return { key: `sk-${keyResult.data.key}`, isNewlyCreated: false }
 }
 
 /**

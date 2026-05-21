@@ -53,7 +53,7 @@ function Chat2LinkPage() {
 
     if (activeKey === undefined && !keyError) return
 
-    if (keyError || !activeKey) {
+    if (keyError || !activeKey?.key) {
       const message =
         keyError instanceof Error
           ? keyError.message
@@ -65,7 +65,7 @@ function Chat2LinkPage() {
 
     const url = resolveChatUrl({
       template: firstWebPreset.url,
-      apiKey: activeKey,
+      apiKey: activeKey?.key,
       serverAddress,
     })
 

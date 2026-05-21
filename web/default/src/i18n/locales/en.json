@@ -2376,6 +2376,7 @@
 "We've automatically created a dedicated API key \"{{name}}\" for you.": "We've automatically created a dedicated API key \"{{name}}\" for you.",
 "This key is linked to the image generation channel. You will only be charged when you actually generate an image — browsing and configuring the playground is free.": "This key is linked to the image generation channel. You will only be charged when you actually generate an image — browsing and configuring the playground is free.",
 "You can view or manage this key anytime in your API Keys page.": "You can view or manage this key anytime in your API Keys page.",
+"All settings, task history and generated images are saved locally in your browser only — nothing is stored on our servers.": "All settings, task history and generated images are saved locally in your browser only — nothing is stored on our servers.",
     "The embedded page did not finish loading. It may be blocked by network restrictions.": "The embedded page did not finish loading. It may be blocked by network restrictions.",
     "Open in a new tab": "Open in a new tab",
     "Model Pricing": "Model Pricing",

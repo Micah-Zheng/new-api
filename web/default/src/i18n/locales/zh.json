@@ -2376,6 +2376,7 @@
 "We've automatically created a dedicated API key \"{{name}}\" for you.": "我们已自动为你创建了专属 API 密钥「{{name}}」。",
 "This key is linked to the image generation channel. You will only be charged when you actually generate an image — browsing and configuring the playground is free.": "该密钥已绑定图片生成渠道，只有在实际生成图片时才会产生费用，浏览和配置页面完全免费。",
 "You can view or manage this key anytime in your API Keys page.": "你可以随时在「API 密钥」页面查看或管理此密钥。",
+"All settings, task history and generated images are saved locally in your browser only — nothing is stored on our servers.": "所有配置、任务记录和生成的图片均仅保存在您的浏览器本地，不存在我们的服务器上。",
     "The embedded page did not finish loading. It may be blocked by network restrictions.": "嵌入页面未能完成加载，可能被网络策略阻止。",
     "Open in a new tab": "在新标签页中打开",
     "Model Pricing": "模型定价",

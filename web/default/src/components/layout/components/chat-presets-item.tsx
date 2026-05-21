@@ -181,7 +181,7 @@ export function ChatPresetsItem({ item }: { item: NavChatPresets }) {
         loadingPresetIdRef.current = preset.id
         setLoadingPresetId(preset.id)
         try {
-          activeKey = await fetchActiveChatKey()
+          activeKey = (await fetchActiveChatKey()).key
         } catch (error) {
           const message =
             error instanceof Error
