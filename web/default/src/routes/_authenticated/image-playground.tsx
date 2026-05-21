@@ -106,7 +106,7 @@ function ImagePlayground() {
     <>
       {/* First-time (or new-key) welcome dialog */}
       <AlertDialog open={showWelcome} onOpenChange={(open) => { if (!open) handleWelcomeDismiss() }}>
-        <AlertDialogContent className='sm:max-w-lg'>
+        <AlertDialogContent style={{ maxWidth: '32rem' }}>
           <AlertDialogHeader>
             <AlertDialogMedia>
               <Sparkles className='text-primary h-5 w-5' />
