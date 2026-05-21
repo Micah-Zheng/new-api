@@ -1,6 +1,9 @@
 package service
 
 import (
+	"io"
+	"net/http"
+	"strings"
 	"testing"
 
 	"github.com/QuantumNous/new-api/types"
@@ -54,4 +57,26 @@ func TestResetStatusCode(t *testing.T) {
 			require.Equal(t, tc.expectedCode, newAPIError.StatusCode)
 		})
 	}
+}
+
+func TestRelayErrorHandlerReturnsNonJSONUpstreamBodySummary(t *testing.T) {
+	t.Parallel()
+
+	resp := &http.Response{
+		StatusCode: http.StatusBadGateway,
+		Body: io.NopCloser(strings.NewReader(`<!doctype html>
+<html><head><title>系统维护中</title><style>body{}</style></head>
+<body><h1>系统升级中，请稍候</h1><p>我们正在进行版本更新，预计 1-2 分钟内恢复。</p></body></html>`)),
+	}
+
+	newAPIError := RelayErrorHandler(t.Context(), resp, false)
+	require.NotNil(t, newAPIError)
+	require.Equal(t, http.StatusBadGateway, newAPIError.StatusCode)
+
+	openAIError := newAPIError.ToOpenAIError()
+	require.Contains(t, openAIError.Message, "bad response status code 502")
+	require.Contains(t, openAIError.Message, "系统升级中，请稍候")
+	require.Contains(t, openAIError.Message, "预计 1-2 分钟内恢复")
+	require.NotContains(t, openAIError.Message, "<html>")
+	require.NotEqual(t, "openai_error", openAIError.Message)
 }

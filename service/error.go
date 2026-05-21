@@ -5,9 +5,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"html"
 	"io"
 	"math"
 	"net/http"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -15,6 +17,14 @@ import (
 	"github.com/QuantumNous/new-api/dto"
 	"github.com/QuantumNous/new-api/logger"
 	"github.com/QuantumNous/new-api/types"
+)
+
+const upstreamErrorBodyPreviewLimit = 300
+
+var (
+	htmlScriptStylePattern = regexp.MustCompile(`(?is)<script\b[^>]*>.*?</script>|<style\b[^>]*>.*?</style>`)
+	htmlTagPattern         = regexp.MustCompile(`(?s)<[^>]+>`)
+	spacePattern           = regexp.MustCompile(`\s+`)
 )
 
 func MidjourneyErrorWrapper(code int, desc string) *dto.MidjourneyResponse {
@@ -101,11 +111,17 @@ func RelayErrorHandler(ctx context.Context, resp *http.Response, showBodyWhenFai
 
 	err = common.Unmarshal(responseBody, &errResponse)
 	if err != nil {
+		message := summarizeUpstreamErrorBody(responseBody)
+		if message == "" {
+			message = fmt.Sprintf("bad response status code %d", resp.StatusCode)
+		} else {
+			message = fmt.Sprintf("bad response status code %d: %s", resp.StatusCode, message)
+		}
+		newApiErr = types.NewOpenAIError(errors.New(message), types.ErrorCodeBadResponseStatusCode, resp.StatusCode)
 		if showBodyWhenFail {
 			newApiErr.Err = buildErrWithBody("")
 		} else {
 			logger.LogError(ctx, fmt.Sprintf("bad response status code %d, body: %s", resp.StatusCode, string(responseBody)))
-			newApiErr.Err = fmt.Errorf("bad response status code %d", resp.StatusCode)
 		}
 		return
 	}
@@ -126,6 +142,26 @@ func RelayErrorHandler(ctx context.Context, resp *http.Response, showBodyWhenFai
 		newApiErr.Err = buildErrWithBody(newApiErr.Error())
 	}
 	return
+}
+
+func summarizeUpstreamErrorBody(body []byte) string {
+	text := strings.TrimSpace(string(body))
+	if text == "" {
+		return ""
+	}
+	text = htmlScriptStylePattern.ReplaceAllString(text, " ")
+	text = htmlTagPattern.ReplaceAllString(text, " ")
+	text = html.UnescapeString(text)
+	text = spacePattern.ReplaceAllString(text, " ")
+	text = strings.TrimSpace(text)
+	if text == "" {
+		return ""
+	}
+	runes := []rune(text)
+	if len(runes) > upstreamErrorBodyPreviewLimit {
+		text = string(runes[:upstreamErrorBodyPreviewLimit]) + "..."
+	}
+	return text
 }
 
 func ResetStatusCode(newApiErr *types.NewAPIError, statusCodeMappingStr string) {
