@@ -435,7 +435,8 @@ export function ModelPricingEditorPanel({
   const [billingExpr, setBillingExpr] = useState('')
   const [requestRuleExpr, setRequestRuleExpr] = useState('')
   const [previewOpen, setPreviewOpen] = useState(true)
-  // Per-resolution image pricing (shown when pricingMode === 'per-request')
+  // Per-resolution image pricing (shown when pricingMode === 'per-request' and subMode === 'per-resolution')
+  const [perRequestSubMode, setPerRequestSubMode] = useState<'fixed' | 'per-resolution'>('fixed')
   const [price1k, setPrice1k] = useState('')
   const [price2k, setPrice2k] = useState('')
   const [price4k, setPrice4k] = useState('')
@@ -483,6 +484,12 @@ export function ModelPricingEditorPanel({
       setPrice1k(editData.price1k || '')
       setPrice2k(editData.price2k || '')
       setPrice4k(editData.price4k || '')
+      // If any resolution price is set, default to per-resolution sub-mode
+      setPerRequestSubMode(
+        editData.price1k || editData.price2k || editData.price4k
+          ? 'per-resolution'
+          : 'fixed'
+      )
     } else {
       form.reset({
         name: '',
@@ -627,19 +634,6 @@ export function ModelPricingEditorPanel({
   }
 
   const watchedValues = form.watch()
-
-  // Detect whether the current model name looks like an image generation model.
-  // We show per-resolution pricing fields only for these models.
-  const isImageModel = useMemo(() => {
-    const name = (watchedValues.name || editData?.name || '').toLowerCase().trim()
-    return (
-      name.startsWith('gpt-image') ||
-      name.startsWith('dall-e') ||
-      name.startsWith('chatgpt-image') ||
-      name.includes('image-generation') ||
-      name.includes('imagen')
-    )
-  }, [watchedValues.name, editData?.name])
   const previewRows = useMemo(
     () =>
       buildPreviewRows(
@@ -737,7 +731,7 @@ export function ModelPricingEditorPanel({
     const data: ModelRatioData = {
       name: values.name.trim(),
       billingMode: pricingMode,
-      price: values.price || '',
+      price: pricingMode === 'per-request' && perRequestSubMode === 'fixed' ? (values.price || '') : '',
       ratio: values.ratio || '',
       cacheRatio: values.cacheRatio || '',
       createCacheRatio: values.createCacheRatio || '',
@@ -745,9 +739,9 @@ export function ModelPricingEditorPanel({
       imageRatio: values.imageRatio || '',
       audioRatio: values.audioRatio || '',
       audioCompletionRatio: values.audioCompletionRatio || '',
-      price1k: price1k || '',
-      price2k: price2k || '',
-      price4k: price4k || '',
+      price1k: pricingMode === 'per-request' && perRequestSubMode === 'per-resolution' ? (price1k || '') : '',
+      price2k: pricingMode === 'per-request' && perRequestSubMode === 'per-resolution' ? (price2k || '') : '',
+      price4k: pricingMode === 'per-request' && perRequestSubMode === 'per-resolution' ? (price4k || '') : '',
     }
 
     if (pricingMode === 'tiered_expr') {
@@ -884,48 +878,68 @@ export function ModelPricingEditorPanel({
                   value='per-request'
                   className='flex flex-col gap-5'
                 >
-                  <FormField
-                    control={form.control}
-                    name='price'
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('Fixed price')}</FormLabel>
-                        <FormControl>
-                          <InputGroup>
-                            <InputGroupAddon>$</InputGroupAddon>
-                            <InputGroupInput
-                              inputMode='decimal'
-                              placeholder='0.01'
-                              {...field}
-                              onChange={(event) => {
-                                const value = event.target.value
-                                if (numericDraftRegex.test(value)) {
-                                  field.onChange(value)
-                                }
-                              }}
-                            />
-                            <InputGroupAddon align='inline-end'>
-                              {t('per request')}
-                            </InputGroupAddon>
-                          </InputGroup>
-                        </FormControl>
-                        <FormDescription>
-                          {t(
-                            'Cost in USD per request, regardless of tokens used.'
-                          )}
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  {/* Sub-mode selector: fixed price vs per-resolution */}
+                  <div className='flex gap-2'>
+                    <Button
+                      type='button'
+                      variant={perRequestSubMode === 'fixed' ? 'default' : 'outline'}
+                      size='sm'
+                      onClick={() => setPerRequestSubMode('fixed')}
+                    >
+                      {t('Fixed price')}
+                    </Button>
+                    <Button
+                      type='button'
+                      variant={perRequestSubMode === 'per-resolution' ? 'default' : 'outline'}
+                      size='sm'
+                      onClick={() => setPerRequestSubMode('per-resolution')}
+                    >
+                      {t('Per-resolution')}
+                    </Button>
+                  </div>
 
-                  {/* Per-resolution pricing — shown for image generation models */}
-                  {isImageModel && (
+                  {perRequestSubMode === 'fixed' && (
+                    <FormField
+                      control={form.control}
+                      name='price'
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t('Fixed price')}</FormLabel>
+                          <FormControl>
+                            <InputGroup>
+                              <InputGroupAddon>$</InputGroupAddon>
+                              <InputGroupInput
+                                inputMode='decimal'
+                                placeholder='0.01'
+                                {...field}
+                                onChange={(event) => {
+                                  const value = event.target.value
+                                  if (numericDraftRegex.test(value)) {
+                                    field.onChange(value)
+                                  }
+                                }}
+                              />
+                              <InputGroupAddon align='inline-end'>
+                                {t('per request')}
+                              </InputGroupAddon>
+                            </InputGroup>
+                          </FormControl>
+                          <FormDescription>
+                            {t(
+                              'Cost in USD per request, regardless of tokens used.'
+                            )}
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
+
+                  {perRequestSubMode === 'per-resolution' && (
                     <FieldGroup>
-                      <FieldTitle>{t('Per-resolution pricing')}</FieldTitle>
                       <FieldDescription>
                         {t(
-                          'Override the flat price per image by output resolution tier. Leave empty to use the built-in default. When set, the billing engine uses these prices instead of the fixed price above.'
+                          'Charge a flat price per image based on output resolution tier. 1K = long edge ≤ 1024px, 2K = ≤ 2048px, 4K = > 2048px. Leave empty to use the built-in default price.'
                         )}
                       </FieldDescription>
                       <div className='grid gap-3 sm:grid-cols-3'>
