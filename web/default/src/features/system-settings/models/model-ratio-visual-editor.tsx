@@ -826,10 +826,10 @@ export const ModelRatioVisualEditor = memo(
           JSON.stringify(billingExprMap, null, 2)
         )
 
-        // Update image_model_setting when per-resolution prices are provided.
+        // Update image_model_setting when per-resolution sub-mode is selected.
         if (
           data.billingMode === 'per-request' &&
-          (data.price1k || data.price2k || data.price4k)
+          data.perRequestSubMode === 'per-resolution'
         ) {
           type ImgCfg = { billing_mode: string; price_1k?: number; price_2k?: number; price_4k?: number }
           const imgSetting = safeJsonParse<{ models?: Record<string, ImgCfg> }>(

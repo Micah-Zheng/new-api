@@ -111,6 +111,8 @@ export type ModelRatioData = {
   price1k?: string
   price2k?: string
   price4k?: string
+  // Signals that per-request billing uses per-resolution sub-mode
+  perRequestSubMode?: 'fixed' | 'per-resolution'
 }
 
 type ModelPricingSheetProps = {
@@ -300,7 +302,11 @@ function buildPreviewRows(
   promptPrice: string,
   lanePrices: Record<LaneKey, string>,
   laneEnabled: Record<LaneKey, boolean>,
-  t: (key: string) => string
+  t: (key: string) => string,
+  perRequestSubMode?: 'fixed' | 'per-resolution',
+  price1k?: string,
+  price2k?: string,
+  price4k?: string,
 ): PreviewRow[] {
   if (mode === 'tiered_expr') {
     const effectiveExpr = combineBillingExpr(billingExpr, requestRuleExpr)
@@ -316,6 +322,14 @@ function buildPreviewRows(
   }
 
   if (mode === 'per-request') {
+    if (perRequestSubMode === 'per-resolution') {
+      return [
+        { key: 'submode', label: 'Sub-mode', value: 'per-resolution' },
+        { key: 'p1k', label: '1K price', value: price1k ? `$${price1k}` : t('Default') },
+        { key: 'p2k', label: '2K price', value: price2k ? `$${price2k}` : t('Default') },
+        { key: 'p4k', label: '4K price', value: price4k ? `$${price4k}` : t('Default') },
+      ]
+    }
     return [
       {
         key: 'price',
@@ -324,7 +338,6 @@ function buildPreviewRows(
       },
     ]
   }
-
   return [
     {
       key: 'inputPrice',
@@ -484,13 +497,13 @@ export function ModelPricingEditorPanel({
       setPrice1k(editData.price1k || '')
       setPrice2k(editData.price2k || '')
       setPrice4k(editData.price4k || '')
-      // If any resolution price is set, default to per-resolution sub-mode
+      // If any resolution price is set, or perRequestSubMode is explicitly set, use per-resolution
       setPerRequestSubMode(
+        editData.perRequestSubMode === 'per-resolution' ||
         editData.price1k || editData.price2k || editData.price4k
           ? 'per-resolution'
           : 'fixed'
-      )
-    } else {
+      )    } else {
       form.reset({
         name: '',
         price: '',
@@ -644,7 +657,11 @@ export function ModelPricingEditorPanel({
         promptPrice,
         lanePrices,
         laneEnabled,
-        t
+        t,
+        perRequestSubMode,
+        price1k,
+        price2k,
+        price4k,
       ),
     [
       billingExpr,
@@ -655,6 +672,10 @@ export function ModelPricingEditorPanel({
       requestRuleExpr,
       t,
       watchedValues,
+      perRequestSubMode,
+      price1k,
+      price2k,
+      price4k,
     ]
   )
 
@@ -742,6 +763,7 @@ export function ModelPricingEditorPanel({
       price1k: pricingMode === 'per-request' && perRequestSubMode === 'per-resolution' ? (price1k || '') : '',
       price2k: pricingMode === 'per-request' && perRequestSubMode === 'per-resolution' ? (price2k || '') : '',
       price4k: pricingMode === 'per-request' && perRequestSubMode === 'per-resolution' ? (price4k || '') : '',
+      perRequestSubMode: pricingMode === 'per-request' ? perRequestSubMode : undefined,
     }
 
     if (pricingMode === 'tiered_expr') {
