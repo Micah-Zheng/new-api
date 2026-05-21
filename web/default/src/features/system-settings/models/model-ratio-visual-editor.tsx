@@ -77,6 +77,7 @@ type ModelRatioVisualEditorProps = {
   audioCompletionRatio: string
   billingMode: string
   billingExpr: string
+  imageModelSetting: string
   onChange: (field: string, value: string) => void
 }
 
@@ -207,6 +208,7 @@ export const ModelRatioVisualEditor = memo(
     audioCompletionRatio,
     billingMode,
     billingExpr,
+    imageModelSetting,
     onChange,
   }: ModelRatioVisualEditorProps) {
     const { t } = useTranslation()
@@ -823,6 +825,32 @@ export const ModelRatioVisualEditor = memo(
           'billing_setting.billing_expr',
           JSON.stringify(billingExprMap, null, 2)
         )
+
+        // Update image_model_setting when per-resolution prices are provided.
+        if (
+          data.billingMode === 'per-request' &&
+          (data.price1k || data.price2k || data.price4k)
+        ) {
+          type ImgCfg = { billing_mode: string; price_1k?: number; price_2k?: number; price_4k?: number }
+          const imgSetting = safeJsonParse<{ models?: Record<string, ImgCfg> }>(
+            imageModelSetting,
+            { fallback: { models: {} }, silent: true }
+          )
+          const imgModels: Record<string, ImgCfg> = imgSetting.models ?? {}
+
+          targetNames.forEach((name) => {
+            const cfg: ImgCfg = { billing_mode: 'per_size' }
+            const p1k = parseFloat(data.price1k ?? '')
+            const p2k = parseFloat(data.price2k ?? '')
+            const p4k = parseFloat(data.price4k ?? '')
+            if (Number.isFinite(p1k)) cfg.price_1k = p1k
+            if (Number.isFinite(p2k)) cfg.price_2k = p2k
+            if (Number.isFinite(p4k)) cfg.price_4k = p4k
+            imgModels[name] = cfg
+          })
+
+          onChange('image_model_setting', JSON.stringify({ models: imgModels }))
+        }
       },
       [
         modelPrice,
@@ -835,6 +863,7 @@ export const ModelRatioVisualEditor = memo(
         audioCompletionRatio,
         billingMode,
         billingExpr,
+        imageModelSetting,
         onChange,
       ]
     )

@@ -37,6 +37,7 @@ const getModelDefaults = (settings: BillingSettings) => ({
   ExposeRatioEnabled: settings.ExposeRatioEnabled,
   BillingMode: settings['billing_setting.billing_mode'],
   BillingExpr: settings['billing_setting.billing_expr'],
+  ImageModelSetting: settings.image_model_setting ?? '',
 })
 
 const getGroupDefaults = (settings: BillingSettings) => ({
@@ -113,8 +114,7 @@ const BILLING_SECTIONS = [
         modelDefaults={getModelDefaults(settings)}
         groupDefaults={getGroupDefaults(settings)}
         toolPricesDefault={settings['tool_price_setting.prices']}
-        imageModelsDefault={settings.image_model_setting ?? ''}
-        visibleTabs={['models', 'image-models', 'tool-prices', 'upstream-sync']}
+        visibleTabs={['models', 'tool-prices', 'upstream-sync']}
       />
     ),
   },
@@ -129,7 +129,6 @@ const BILLING_SECTIONS = [
         modelDefaults={getModelDefaults(settings)}
         groupDefaults={getGroupDefaults(settings)}
         toolPricesDefault={settings['tool_price_setting.prices']}
-        imageModelsDefault={settings.image_model_setting ?? ''}
         visibleTabs={['groups']}
       />
     ),

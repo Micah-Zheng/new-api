@@ -29,7 +29,6 @@ import { resetModelRatios } from '../api'
 import { SettingsSection } from '../components/settings-section'
 import { useUpdateOption } from '../hooks/use-update-option'
 import { GroupRatioForm } from './group-ratio-form'
-import { ImageModelSettings } from './image-model-settings'
 import { ModelRatioForm } from './model-ratio-form'
 import { ToolPriceSettings } from './tool-price-settings'
 import { UpstreamRatioSync } from './upstream-ratio-sync'
@@ -131,6 +130,7 @@ const modelSchema = z.object({
       })
     }
   }),
+  ImageModelSetting: z.string(),
 })
 
 const groupSchema = z.object({
@@ -198,13 +198,12 @@ const groupSchema = z.object({
 
 type ModelFormValues = z.infer<typeof modelSchema>
 type GroupFormValues = z.infer<typeof groupSchema>
-type RatioTabId = 'models' | 'groups' | 'tool-prices' | 'image-models' | 'upstream-sync'
+type RatioTabId = 'models' | 'groups' | 'tool-prices' | 'upstream-sync'
 
 type RatioSettingsCardProps = {
   modelDefaults: ModelFormValues
   groupDefaults: GroupFormValues
   toolPricesDefault: string
-  imageModelsDefault: string
   titleKey?: string
   descriptionKey?: string
   visibleTabs?: RatioTabId[]
@@ -214,10 +213,9 @@ export function RatioSettingsCard({
   modelDefaults,
   groupDefaults,
   toolPricesDefault,
-  imageModelsDefault,
   titleKey = 'Pricing Ratios',
   descriptionKey = 'Configure model, caching, and group ratios used for billing',
-  visibleTabs = ['models', 'image-models', 'groups', 'tool-prices', 'upstream-sync'],
+  visibleTabs = ['models', 'groups', 'tool-prices', 'upstream-sync'],
 }: RatioSettingsCardProps) {
   const { t } = useTranslation()
   const updateOption = useUpdateOption()
@@ -254,6 +252,7 @@ export function RatioSettingsCard({
     ExposeRatioEnabled: modelDefaults.ExposeRatioEnabled,
     BillingMode: normalizeJsonString(modelDefaults.BillingMode),
     BillingExpr: normalizeJsonString(modelDefaults.BillingExpr),
+    ImageModelSetting: modelDefaults.ImageModelSetting ?? '',
   })
 
   const groupNormalizedDefaults = useRef({
@@ -285,6 +284,7 @@ export function RatioSettingsCard({
       ),
       BillingMode: formatJsonForTextarea(modelDefaults.BillingMode),
       BillingExpr: formatJsonForTextarea(modelDefaults.BillingExpr),
+      ImageModelSetting: modelDefaults.ImageModelSetting ?? '',
     },
   })
 
@@ -319,6 +319,7 @@ export function RatioSettingsCard({
       ExposeRatioEnabled: modelDefaults.ExposeRatioEnabled,
       BillingMode: normalizeJsonString(modelDefaults.BillingMode),
       BillingExpr: normalizeJsonString(modelDefaults.BillingExpr),
+      ImageModelSetting: modelDefaults.ImageModelSetting ?? '',
     }
 
     modelForm.reset({
@@ -335,6 +336,7 @@ export function RatioSettingsCard({
       ),
       BillingMode: formatJsonForTextarea(modelDefaults.BillingMode),
       BillingExpr: formatJsonForTextarea(modelDefaults.BillingExpr),
+      ImageModelSetting: modelDefaults.ImageModelSetting ?? '',
     })
   }, [modelDefaults, modelForm])
 
@@ -378,11 +380,13 @@ export function RatioSettingsCard({
         ExposeRatioEnabled: values.ExposeRatioEnabled,
         BillingMode: normalizeJsonString(values.BillingMode),
         BillingExpr: normalizeJsonString(values.BillingExpr),
+        ImageModelSetting: values.ImageModelSetting ?? '',
       }
 
       const apiKeyMap: Record<string, string> = {
         BillingMode: 'billing_setting.billing_mode',
         BillingExpr: 'billing_setting.billing_expr',
+        ImageModelSetting: 'image_model_setting',
       }
 
       const updates = (
@@ -446,7 +450,6 @@ export function RatioSettingsCard({
     models: 'Model prices',
     groups: 'Group ratios',
     'tool-prices': 'Tool prices',
-    'image-models': 'Image models',
     'upstream-sync': 'Upstream price sync',
   }
   const tabsGridClass =
@@ -455,8 +458,7 @@ export function RatioSettingsCard({
       2: 'grid-cols-2',
       3: 'grid-cols-3',
       4: 'grid-cols-4',
-      5: 'grid-cols-5',
-    }[visibleTabs.length] ?? 'grid-cols-5'
+    }[visibleTabs.length] ?? 'grid-cols-4'
   const defaultTab = visibleTabs[0] ?? 'models'
 
   const renderTabContent = (tab: RatioTabId) => {
@@ -482,9 +484,6 @@ export function RatioSettingsCard({
     }
     if (tab === 'tool-prices') {
       return <ToolPriceSettings defaultValue={toolPricesDefault} />
-    }
-    if (tab === 'image-models') {
-      return <ImageModelSettings defaultValue={imageModelsDefault} />
     }
     return (
       <UpstreamRatioSync

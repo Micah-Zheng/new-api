@@ -106,6 +106,11 @@ export type ModelRatioData = {
   billingMode?: PricingMode
   billingExpr?: string
   requestRuleExpr?: string
+  // Per-resolution image pricing (only used when pricingMode === 'per-request'
+  // and the model is an image model). Stored in image_model_setting separately.
+  price1k?: string
+  price2k?: string
+  price4k?: string
 }
 
 type ModelPricingSheetProps = {
@@ -430,6 +435,10 @@ export function ModelPricingEditorPanel({
   const [billingExpr, setBillingExpr] = useState('')
   const [requestRuleExpr, setRequestRuleExpr] = useState('')
   const [previewOpen, setPreviewOpen] = useState(true)
+  // Per-resolution image pricing (shown when pricingMode === 'per-request')
+  const [price1k, setPrice1k] = useState('')
+  const [price2k, setPrice2k] = useState('')
+  const [price4k, setPrice4k] = useState('')
   const isEditMode = !!editData
 
   const form = useForm<ModelPricingFormValues>({
@@ -471,6 +480,9 @@ export function ModelPricingEditorPanel({
       )
       setBillingExpr(editData.billingExpr || '')
       setRequestRuleExpr(editData.requestRuleExpr || '')
+      setPrice1k(editData.price1k || '')
+      setPrice2k(editData.price2k || '')
+      setPrice4k(editData.price4k || '')
     } else {
       form.reset({
         name: '',
@@ -615,6 +627,19 @@ export function ModelPricingEditorPanel({
   }
 
   const watchedValues = form.watch()
+
+  // Detect whether the current model name looks like an image generation model.
+  // We show per-resolution pricing fields only for these models.
+  const isImageModel = useMemo(() => {
+    const name = (watchedValues.name || editData?.name || '').toLowerCase().trim()
+    return (
+      name.startsWith('gpt-image') ||
+      name.startsWith('dall-e') ||
+      name.startsWith('chatgpt-image') ||
+      name.includes('image-generation') ||
+      name.includes('imagen')
+    )
+  }, [watchedValues.name, editData?.name])
   const previewRows = useMemo(
     () =>
       buildPreviewRows(
@@ -720,6 +745,9 @@ export function ModelPricingEditorPanel({
       imageRatio: values.imageRatio || '',
       audioRatio: values.audioRatio || '',
       audioCompletionRatio: values.audioCompletionRatio || '',
+      price1k: price1k || '',
+      price2k: price2k || '',
+      price4k: price4k || '',
     }
 
     if (pricingMode === 'tiered_expr') {
@@ -890,6 +918,49 @@ export function ModelPricingEditorPanel({
                       </FormItem>
                     )}
                   />
+
+                  {/* Per-resolution pricing — shown for image generation models */}
+                  {isImageModel && (
+                    <FieldGroup>
+                      <FieldTitle>{t('Per-resolution pricing')}</FieldTitle>
+                      <FieldDescription>
+                        {t(
+                          'Override the flat price per image by output resolution tier. Leave empty to use the built-in default. When set, the billing engine uses these prices instead of the fixed price above.'
+                        )}
+                      </FieldDescription>
+                      <div className='grid gap-3 sm:grid-cols-3'>
+                        {(
+                          [
+                            { label: '1K (≤ 1024px)', value: price1k, setter: setPrice1k, placeholder: '0.011' },
+                            { label: '2K (≤ 2048px)', value: price2k, setter: setPrice2k, placeholder: '0.042' },
+                            { label: '4K (> 2048px)', value: price4k, setter: setPrice4k, placeholder: '0.167' },
+                          ] as const
+                        ).map(({ label, value, setter, placeholder }) => (
+                          <Field key={label}>
+                            <FieldLabel>{label}</FieldLabel>
+                            <FieldContent>
+                              <InputGroup>
+                                <InputGroupAddon>$</InputGroupAddon>
+                                <InputGroupInput
+                                  inputMode='decimal'
+                                  placeholder={placeholder}
+                                  value={value}
+                                  onChange={(e) => {
+                                    if (numericDraftRegex.test(e.target.value)) {
+                                      setter(e.target.value)
+                                    }
+                                  }}
+                                />
+                                <InputGroupAddon align='inline-end'>
+                                  {t('/ img')}
+                                </InputGroupAddon>
+                              </InputGroup>
+                            </FieldContent>
+                          </Field>
+                        ))}
+                      </div>
+                    </FieldGroup>
+                  )}
                 </TabsContent>
 
                 <TabsContent
