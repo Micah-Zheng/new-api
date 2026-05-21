@@ -61,7 +61,6 @@ function ApiVerify() {
             setIsLoading(false)
             setDidTimeout(false)
           }}
-          sandbox='allow-scripts allow-forms'
           allow='clipboard-read; clipboard-write'
           referrerPolicy='no-referrer'
         />
