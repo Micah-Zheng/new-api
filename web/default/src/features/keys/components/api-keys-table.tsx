@@ -232,8 +232,8 @@ export function ApiKeysTable() {
           return { items: [], total: 0 }
         }
         return {
-          items: result.data || [],
-          total: result.data?.length || 0,
+          items: result.data?.items || [],
+          total: result.data?.total || 0,
         }
       }
 
