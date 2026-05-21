@@ -2393,6 +2393,8 @@
 "Override the flat price per image by output resolution tier. Leave empty to use the built-in default. When set, the billing engine uses these prices instead of the fixed price above.": "Override the flat price per image by output resolution tier. Leave empty to use the built-in default. When set, the billing engine uses these prices instead of the fixed price above.",
 "/ img": "/ img",
 "Charge a flat price per image based on output resolution tier. 1K = long edge ≤ 1024px, 2K = ≤ 2048px, 4K = > 2048px. Leave empty to use the built-in default price.": "Charge a flat price per image based on output resolution tier. 1K = long edge ≤ 1024px, 2K = ≤ 2048px, 4K = > 2048px. Leave empty to use the built-in default price.",
+"Per-resolution (default prices)": "Per-resolution (default prices)",
+"Billed per image by resolution tier": "Billed per image by resolution tier",
     "The embedded page did not finish loading. It may be blocked by network restrictions.": "The embedded page did not finish loading. It may be blocked by network restrictions.",
     "Open in a new tab": "Open in a new tab",
     "Model Pricing": "Model Pricing",

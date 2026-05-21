@@ -2393,6 +2393,8 @@
 "Override the flat price per image by output resolution tier. Leave empty to use the built-in default. When set, the billing engine uses these prices instead of the fixed price above.": "按输出分辨率档位覆盖每张图片的固定价格。留空则使用内置默认值。设置后，计费引擎将使用这些价格而非上方的固定价格。",
 "/ img": "/ 张",
 "Charge a flat price per image based on output resolution tier. 1K = long edge ≤ 1024px, 2K = ≤ 2048px, 4K = > 2048px. Leave empty to use the built-in default price.": "按输出分辨率档位对每张图片收取固定费用。1K = 长边 ≤ 1024px，2K = ≤ 2048px，4K = > 2048px。留空则使用内置默认价格。",
+"Per-resolution (default prices)": "按分辨率（默认价格）",
+"Billed per image by resolution tier": "按分辨率档位对每张图片计费",
     "The embedded page did not finish loading. It may be blocked by network restrictions.": "嵌入页面未能完成加载，可能被网络策略阻止。",
     "Open in a new tab": "在新标签页中打开",
     "Model Pricing": "模型定价",

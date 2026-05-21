@@ -131,14 +131,20 @@ const filterBySelectedValues = (
   return filterValue.includes(String(rowValue))
 }
 
-const getModeLabel = (mode?: string) => {
-  if (mode === 'per-request') return 'Per-request'
+const getModeLabel = (mode?: string, perRequestSubMode?: string) => {
+  if (mode === 'per-request') {
+    if (perRequestSubMode === 'per-resolution') return 'Per-resolution'
+    return 'Per-request'
+  }
   if (mode === 'tiered_expr') return 'Expression'
   return 'Per-token'
 }
 
-const getModeVariant = (mode?: string): 'warning' | 'info' | 'success' => {
-  if (mode === 'per-request') return 'warning'
+const getModeVariant = (mode?: string, perRequestSubMode?: string): 'warning' | 'info' | 'success' | 'orange' => {
+  if (mode === 'per-request') {
+    if (perRequestSubMode === 'per-resolution') return 'orange'
+    return 'warning'
+  }
   if (mode === 'tiered_expr') return 'info'
   return 'success'
 }
@@ -156,7 +162,15 @@ const getPriceSummary = (row: ModelRow, t: (key: string) => string) => {
     return getExpressionSummary(row, t)
   }
   if (row.billingMode === 'per-request') {
-    return row.price ? `$${row.price} / ${t('request')}` : t('Unset price')
+    if (row.perRequestSubMode === 'per-resolution') {
+      const parts = [
+        row.price1k ? `1K $${row.price1k}` : null,
+        row.price2k ? `2K $${row.price2k}` : null,
+        row.price4k ? `4K $${row.price4k}` : null,
+      ].filter(Boolean)
+      return parts.length > 0 ? parts.join(' · ') : t('Per-resolution (default prices)')
+    }
+    return row.price && row.price !== '0' ? `$${row.price} / ${t('request')}` : t('Unset price')
   }
 
   const inputPrice = ratioToPrice(row.ratio)
@@ -183,6 +197,9 @@ const getPriceDetail = (row: ModelRow, t: (key: string) => string) => {
       : t('Expression based')
   }
   if (row.billingMode === 'per-request') {
+    if (row.perRequestSubMode === 'per-resolution') {
+      return t('Billed per image by resolution tier')
+    }
     return t('Fixed request price')
   }
 
@@ -644,8 +661,8 @@ export const ModelRatioVisualEditor = memo(
           ),
           cell: ({ row }) => (
             <StatusBadge
-              label={t(getModeLabel(row.original.billingMode))}
-              variant={getModeVariant(row.original.billingMode)}
+              label={t(getModeLabel(row.original.billingMode, row.original.perRequestSubMode))}
+              variant={getModeVariant(row.original.billingMode, row.original.perRequestSubMode)}
               copyable={false}
             />
           ),
