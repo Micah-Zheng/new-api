@@ -4,8 +4,11 @@ import { ExternalLink, Loader2, Palette, TriangleAlert } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 import { Main } from '@/components/layout'
+import { useActiveChatKey } from '@/features/chat/hooks/use-active-chat-key'
 
-const IMAGE_PLAYGROUND_URL = 'https://api.tcp.red/image-playground/'
+const IMAGE_PLAYGROUND_BASE_URL = 'https://api.tcp.red/image-playground/'
+const IMAGE_PLAYGROUND_SERVER_URL = 'https://api.tcp.red/v1'
+const DEDICATED_KEY_NAME = 'image-playground'
 const LOAD_TIMEOUT_MS = 15_000
 
 export const Route = createFileRoute('/_authenticated/image-playground')({
@@ -17,16 +20,49 @@ function ImagePlayground() {
   const [isLoading, setIsLoading] = useState(true)
   const [didTimeout, setDidTimeout] = useState(false)
 
+  const { data: apiKey, isPending: isKeyPending, isError: isKeyError, error: keyError } =
+    useActiveChatKey(true, DEDICATED_KEY_NAME)
+
+  const iframeSrc = apiKey
+    ? `${IMAGE_PLAYGROUND_BASE_URL}?apiKey=${encodeURIComponent(apiKey)}&apiUrl=${encodeURIComponent(IMAGE_PLAYGROUND_SERVER_URL)}`
+    : undefined
+
   useEffect(() => {
+    if (!iframeSrc) return
+    setIsLoading(true)
+    setDidTimeout(false)
     const timer = window.setTimeout(() => setDidTimeout(true), LOAD_TIMEOUT_MS)
     return () => window.clearTimeout(timer)
-  }, [])
+  }, [iframeSrc])
+
+  if (isKeyPending) {
+    return (
+      <Main className='p-4'>
+        <div className='flex h-full flex-col items-center justify-center gap-3'>
+          <Loader2 className='text-muted-foreground h-8 w-8 animate-spin' aria-hidden='true' />
+          <p className='text-muted-foreground text-sm'>{t('Preparing your API key…')}</p>
+        </div>
+      </Main>
+    )
+  }
+
+  if (isKeyError || !iframeSrc) {
+    const message = keyError instanceof Error ? keyError.message : t('Unable to load API key.')
+    return (
+      <Main className='p-4'>
+        <div className='flex h-full flex-col items-center justify-center gap-3 p-6 text-center'>
+          <TriangleAlert className='text-muted-foreground h-8 w-8' />
+          <p className='text-muted-foreground max-w-md text-sm'>{message}</p>
+        </div>
+      </Main>
+    )
+  }
 
   return (
     <Main className='p-4'>
       <div className='bg-background relative min-h-0 flex-1 overflow-hidden rounded-xl border'>
         <a
-          href={IMAGE_PLAYGROUND_URL}
+          href={IMAGE_PLAYGROUND_BASE_URL}
           target='_blank'
           rel='noreferrer noopener'
           className={cn(
@@ -53,7 +89,7 @@ function ImagePlayground() {
               {t('The embedded page did not finish loading. It may be blocked by network restrictions.')}
             </p>
             <a
-              href={IMAGE_PLAYGROUND_URL}
+              href={IMAGE_PLAYGROUND_BASE_URL}
               target='_blank'
               rel='noreferrer noopener'
               className='text-primary inline-flex items-center gap-2 text-sm underline underline-offset-4'
@@ -64,7 +100,8 @@ function ImagePlayground() {
           </div>
         )}
         <iframe
-          src={IMAGE_PLAYGROUND_URL}
+          src={iframeSrc}
+          key={iframeSrc}
           title={t('Image Playground')}
           className={cn(
             'h-full w-full border-0 transition-opacity duration-300',
