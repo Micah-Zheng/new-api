@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import { ExternalLink, HardDrive, Loader2, Palette, Sparkles, TriangleAlert } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { useQueryClient } from '@tanstack/react-query'
 import { cn } from '@/lib/utils'
 import { Main } from '@/components/layout'
 import { useActiveChatKey } from '@/features/chat/hooks/use-active-chat-key'
@@ -34,9 +35,20 @@ export const Route = createFileRoute('/_authenticated/image-playground')({
 
 function ImagePlayground() {
   const { t } = useTranslation()
+  const queryClient = useQueryClient()
   const [isLoading, setIsLoading] = useState(true)
   const [didTimeout, setDidTimeout] = useState(false)
   const [showWelcome, setShowWelcome] = useState(false)
+
+  // Invalidate the cached key every time this page mounts, so that if the
+  // user deleted and recreated the key, we always fetch the latest one.
+  useEffect(() => {
+    queryClient.invalidateQueries({
+      queryKey: ['chat-active-key'],
+      exact: false,
+    })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const {
     data: keyResult,
@@ -46,19 +58,20 @@ function ImagePlayground() {
   } = useActiveChatKey(true, DEDICATED_KEY_NAME)
 
   const apiKey = keyResult?.key
-  const isNewlyCreated = keyResult?.isNewlyCreated ?? false
 
-  // Show welcome dialog when a new key is created, or when the key changes
-  // (e.g. user deleted the old one and a new one was auto-created).
+  // Show welcome dialog the first time a key is used in this browser.
+  // Logic: if localStorage doesn't have a record for this key's identifier,
+  // show the dialog. Dismissing stores the identifier so it won't show again
+  // for the same key. If the user deletes and recreates the key, the new key
+  // has a different identifier, so the dialog appears again.
   useEffect(() => {
     if (!apiKey) return
-    const shownForKey = localStorage.getItem(WELCOME_SHOWN_FOR_KEY)
-    // Use first 16 chars of key as identifier (enough to detect key change)
     const keyId = apiKey.slice(0, 16)
-    if (isNewlyCreated || shownForKey !== keyId) {
+    const shownForKey = localStorage.getItem(WELCOME_SHOWN_FOR_KEY)
+    if (shownForKey !== keyId) {
       setShowWelcome(true)
     }
-  }, [apiKey, isNewlyCreated])
+  }, [apiKey])
 
   const handleWelcomeDismiss = () => {
     if (apiKey) {
