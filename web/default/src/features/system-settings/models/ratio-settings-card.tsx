@@ -217,7 +217,7 @@ export function RatioSettingsCard({
   imageModelsDefault,
   titleKey = 'Pricing Ratios',
   descriptionKey = 'Configure model, caching, and group ratios used for billing',
-  visibleTabs = ['models', 'groups', 'tool-prices', 'image-models', 'upstream-sync'],
+  visibleTabs = ['models', 'image-models', 'groups', 'tool-prices', 'upstream-sync'],
 }: RatioSettingsCardProps) {
   const { t } = useTranslation()
   const updateOption = useUpdateOption()

@@ -114,7 +114,7 @@ const BILLING_SECTIONS = [
         groupDefaults={getGroupDefaults(settings)}
         toolPricesDefault={settings['tool_price_setting.prices']}
         imageModelsDefault={settings.image_model_setting ?? ''}
-        visibleTabs={['models', 'tool-prices', 'image-models', 'upstream-sync']}
+        visibleTabs={['models', 'image-models', 'tool-prices', 'upstream-sync']}
       />
     ),
   },
