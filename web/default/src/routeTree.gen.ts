@@ -21,7 +21,10 @@ import { Route as AboutIndexRouteImport } from './routes/about/index'
 import { Route as OauthProviderRouteImport } from './routes/oauth/$provider'
 import { Route as ConsoleTopupRouteImport } from './routes/console/topup'
 import { Route as ConsoleLogRouteImport } from './routes/console/log'
+import { Route as AuthenticatedStatusMonitorRouteImport } from './routes/_authenticated/status-monitor'
+import { Route as AuthenticatedImagePlaygroundRouteImport } from './routes/_authenticated/image-playground'
 import { Route as AuthenticatedChat2linkRouteImport } from './routes/_authenticated/chat2link'
+import { Route as AuthenticatedApiVerifyRouteImport } from './routes/_authenticated/api-verify'
 import { Route as errors503RouteImport } from './routes/(errors)/503'
 import { Route as errors500RouteImport } from './routes/(errors)/500'
 import { Route as errors404RouteImport } from './routes/(errors)/404'
@@ -44,6 +47,7 @@ import { Route as AuthenticatedRedemptionCodesIndexRouteImport } from './routes/
 import { Route as AuthenticatedProfileIndexRouteImport } from './routes/_authenticated/profile/index'
 import { Route as AuthenticatedPlaygroundIndexRouteImport } from './routes/_authenticated/playground/index'
 import { Route as AuthenticatedModelsIndexRouteImport } from './routes/_authenticated/models/index'
+import { Route as AuthenticatedModelSquareIndexRouteImport } from './routes/_authenticated/model-square/index'
 import { Route as AuthenticatedKeysIndexRouteImport } from './routes/_authenticated/keys/index'
 import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard/index'
 import { Route as AuthenticatedChannelsIndexRouteImport } from './routes/_authenticated/channels/index'
@@ -61,8 +65,6 @@ import { Route as AuthenticatedSystemSettingsContentIndexRouteImport } from './r
 import { Route as AuthenticatedSystemSettingsBillingIndexRouteImport } from './routes/_authenticated/system-settings/billing/index'
 import { Route as AuthenticatedSystemSettingsAuthIndexRouteImport } from './routes/_authenticated/system-settings/auth/index'
 import { Route as AuthenticatedModelSquareModelIdIndexRouteImport } from './routes/_authenticated/model-square/$modelId/index'
-import { Route as AuthenticatedModelSquareIndexRouteImport } from './routes/_authenticated/model-square/index'
-import { Route as AuthenticatedStatusMonitorRouteImport } from './routes/_authenticated/status-monitor'
 import { Route as AuthenticatedSystemSettingsSiteSectionRouteImport } from './routes/_authenticated/system-settings/site/$section'
 import { Route as AuthenticatedSystemSettingsSecuritySectionRouteImport } from './routes/_authenticated/system-settings/security/$section'
 import { Route as AuthenticatedSystemSettingsOperationsSectionRouteImport } from './routes/_authenticated/system-settings/operations/$section'
@@ -129,9 +131,26 @@ const ConsoleLogRoute = ConsoleLogRouteImport.update({
   path: '/console/log',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedStatusMonitorRoute =
+  AuthenticatedStatusMonitorRouteImport.update({
+    id: '/status-monitor',
+    path: '/status-monitor',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedImagePlaygroundRoute =
+  AuthenticatedImagePlaygroundRouteImport.update({
+    id: '/image-playground',
+    path: '/image-playground',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedChat2linkRoute = AuthenticatedChat2linkRouteImport.update({
   id: '/chat2link',
   path: '/chat2link',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedApiVerifyRoute = AuthenticatedApiVerifyRouteImport.update({
+  id: '/api-verify',
+  path: '/api-verify',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const errors503Route = errors503RouteImport.update({
@@ -253,6 +272,12 @@ const AuthenticatedModelsIndexRoute =
     path: '/models/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedModelSquareIndexRoute =
+  AuthenticatedModelSquareIndexRouteImport.update({
+    id: '/model-square/',
+    path: '/model-square/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedKeysIndexRoute = AuthenticatedKeysIndexRouteImport.update({
   id: '/keys/',
   path: '/keys/',
@@ -346,18 +371,6 @@ const AuthenticatedSystemSettingsAuthIndexRoute =
     path: '/auth/',
     getParentRoute: () => AuthenticatedSystemSettingsRouteRoute,
   } as any)
-const AuthenticatedModelSquareIndexRoute =
-  AuthenticatedModelSquareIndexRouteImport.update({
-    id: '/model-square/',
-    path: '/model-square/',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedStatusMonitorRoute =
-  AuthenticatedStatusMonitorRouteImport.update({
-    id: '/status-monitor',
-    path: '/status-monitor',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
 const AuthenticatedModelSquareModelIdIndexRoute =
   AuthenticatedModelSquareModelIdIndexRouteImport.update({
     id: '/model-square/$modelId/',
@@ -423,7 +436,10 @@ export interface FileRoutesByFullPath {
   '/404': typeof errors404Route
   '/500': typeof errors500Route
   '/503': typeof errors503Route
+  '/api-verify': typeof AuthenticatedApiVerifyRoute
   '/chat2link': typeof AuthenticatedChat2linkRoute
+  '/image-playground': typeof AuthenticatedImagePlaygroundRoute
+  '/status-monitor': typeof AuthenticatedStatusMonitorRoute
   '/console/log': typeof ConsoleLogRoute
   '/console/topup': typeof ConsoleTopupRoute
   '/oauth/$provider': typeof OauthProviderRoute
@@ -440,6 +456,7 @@ export interface FileRoutesByFullPath {
   '/channels/': typeof AuthenticatedChannelsIndexRoute
   '/dashboard/': typeof AuthenticatedDashboardIndexRoute
   '/keys/': typeof AuthenticatedKeysIndexRoute
+  '/model-square/': typeof AuthenticatedModelSquareIndexRoute
   '/models/': typeof AuthenticatedModelsIndexRoute
   '/playground/': typeof AuthenticatedPlaygroundIndexRoute
   '/profile/': typeof AuthenticatedProfileIndexRoute
@@ -457,8 +474,6 @@ export interface FileRoutesByFullPath {
   '/system-settings/operations/$section': typeof AuthenticatedSystemSettingsOperationsSectionRoute
   '/system-settings/security/$section': typeof AuthenticatedSystemSettingsSecuritySectionRoute
   '/system-settings/site/$section': typeof AuthenticatedSystemSettingsSiteSectionRoute
-  '/model-square/': typeof AuthenticatedModelSquareIndexRoute
-  '/status-monitor': typeof AuthenticatedStatusMonitorRoute
   '/model-square/$modelId/': typeof AuthenticatedModelSquareModelIdIndexRoute
   '/system-settings/auth/': typeof AuthenticatedSystemSettingsAuthIndexRoute
   '/system-settings/billing/': typeof AuthenticatedSystemSettingsBillingIndexRoute
@@ -483,7 +498,10 @@ export interface FileRoutesByTo {
   '/404': typeof errors404Route
   '/500': typeof errors500Route
   '/503': typeof errors503Route
+  '/api-verify': typeof AuthenticatedApiVerifyRoute
   '/chat2link': typeof AuthenticatedChat2linkRoute
+  '/image-playground': typeof AuthenticatedImagePlaygroundRoute
+  '/status-monitor': typeof AuthenticatedStatusMonitorRoute
   '/console/log': typeof ConsoleLogRoute
   '/console/topup': typeof ConsoleTopupRoute
   '/oauth/$provider': typeof OauthProviderRoute
@@ -500,6 +518,7 @@ export interface FileRoutesByTo {
   '/channels': typeof AuthenticatedChannelsIndexRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
   '/keys': typeof AuthenticatedKeysIndexRoute
+  '/model-square': typeof AuthenticatedModelSquareIndexRoute
   '/models': typeof AuthenticatedModelsIndexRoute
   '/playground': typeof AuthenticatedPlaygroundIndexRoute
   '/profile': typeof AuthenticatedProfileIndexRoute
@@ -517,8 +536,6 @@ export interface FileRoutesByTo {
   '/system-settings/operations/$section': typeof AuthenticatedSystemSettingsOperationsSectionRoute
   '/system-settings/security/$section': typeof AuthenticatedSystemSettingsSecuritySectionRoute
   '/system-settings/site/$section': typeof AuthenticatedSystemSettingsSiteSectionRoute
-  '/model-square': typeof AuthenticatedModelSquareIndexRoute
-  '/status-monitor': typeof AuthenticatedStatusMonitorRoute
   '/model-square/$modelId': typeof AuthenticatedModelSquareModelIdIndexRoute
   '/system-settings/auth': typeof AuthenticatedSystemSettingsAuthIndexRoute
   '/system-settings/billing': typeof AuthenticatedSystemSettingsBillingIndexRoute
@@ -547,7 +564,10 @@ export interface FileRoutesById {
   '/(errors)/404': typeof errors404Route
   '/(errors)/500': typeof errors500Route
   '/(errors)/503': typeof errors503Route
+  '/_authenticated/api-verify': typeof AuthenticatedApiVerifyRoute
   '/_authenticated/chat2link': typeof AuthenticatedChat2linkRoute
+  '/_authenticated/image-playground': typeof AuthenticatedImagePlaygroundRoute
+  '/_authenticated/status-monitor': typeof AuthenticatedStatusMonitorRoute
   '/console/log': typeof ConsoleLogRoute
   '/console/topup': typeof ConsoleTopupRoute
   '/oauth/$provider': typeof OauthProviderRoute
@@ -564,6 +584,7 @@ export interface FileRoutesById {
   '/_authenticated/channels/': typeof AuthenticatedChannelsIndexRoute
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
   '/_authenticated/keys/': typeof AuthenticatedKeysIndexRoute
+  '/_authenticated/model-square/': typeof AuthenticatedModelSquareIndexRoute
   '/_authenticated/models/': typeof AuthenticatedModelsIndexRoute
   '/_authenticated/playground/': typeof AuthenticatedPlaygroundIndexRoute
   '/_authenticated/profile/': typeof AuthenticatedProfileIndexRoute
@@ -581,8 +602,6 @@ export interface FileRoutesById {
   '/_authenticated/system-settings/operations/$section': typeof AuthenticatedSystemSettingsOperationsSectionRoute
   '/_authenticated/system-settings/security/$section': typeof AuthenticatedSystemSettingsSecuritySectionRoute
   '/_authenticated/system-settings/site/$section': typeof AuthenticatedSystemSettingsSiteSectionRoute
-  '/_authenticated/model-square/': typeof AuthenticatedModelSquareIndexRoute
-  '/_authenticated/status-monitor': typeof AuthenticatedStatusMonitorRoute
   '/_authenticated/model-square/$modelId/': typeof AuthenticatedModelSquareModelIdIndexRoute
   '/_authenticated/system-settings/auth/': typeof AuthenticatedSystemSettingsAuthIndexRoute
   '/_authenticated/system-settings/billing/': typeof AuthenticatedSystemSettingsBillingIndexRoute
@@ -610,7 +629,10 @@ export interface FileRouteTypes {
     | '/404'
     | '/500'
     | '/503'
+    | '/api-verify'
     | '/chat2link'
+    | '/image-playground'
+    | '/status-monitor'
     | '/console/log'
     | '/console/topup'
     | '/oauth/$provider'
@@ -627,6 +649,7 @@ export interface FileRouteTypes {
     | '/channels/'
     | '/dashboard/'
     | '/keys/'
+    | '/model-square/'
     | '/models/'
     | '/playground/'
     | '/profile/'
@@ -644,6 +667,7 @@ export interface FileRouteTypes {
     | '/system-settings/operations/$section'
     | '/system-settings/security/$section'
     | '/system-settings/site/$section'
+    | '/model-square/$modelId/'
     | '/system-settings/auth/'
     | '/system-settings/billing/'
     | '/system-settings/content/'
@@ -667,7 +691,10 @@ export interface FileRouteTypes {
     | '/404'
     | '/500'
     | '/503'
+    | '/api-verify'
     | '/chat2link'
+    | '/image-playground'
+    | '/status-monitor'
     | '/console/log'
     | '/console/topup'
     | '/oauth/$provider'
@@ -684,6 +711,7 @@ export interface FileRouteTypes {
     | '/channels'
     | '/dashboard'
     | '/keys'
+    | '/model-square'
     | '/models'
     | '/playground'
     | '/profile'
@@ -701,10 +729,7 @@ export interface FileRouteTypes {
     | '/system-settings/operations/$section'
     | '/system-settings/security/$section'
     | '/system-settings/site/$section'
-    | '/model-square/'
-    | '/model-square'
-    | '/status-monitor'
-    | '/model-square/$modelId/'
+    | '/model-square/$modelId'
     | '/system-settings/auth'
     | '/system-settings/billing'
     | '/system-settings/content'
@@ -731,7 +756,10 @@ export interface FileRouteTypes {
     | '/(errors)/404'
     | '/(errors)/500'
     | '/(errors)/503'
+    | '/_authenticated/api-verify'
     | '/_authenticated/chat2link'
+    | '/_authenticated/image-playground'
+    | '/_authenticated/status-monitor'
     | '/console/log'
     | '/console/topup'
     | '/oauth/$provider'
@@ -748,6 +776,7 @@ export interface FileRouteTypes {
     | '/_authenticated/channels/'
     | '/_authenticated/dashboard/'
     | '/_authenticated/keys/'
+    | '/_authenticated/model-square/'
     | '/_authenticated/models/'
     | '/_authenticated/playground/'
     | '/_authenticated/profile/'
@@ -765,8 +794,6 @@ export interface FileRouteTypes {
     | '/_authenticated/system-settings/operations/$section'
     | '/_authenticated/system-settings/security/$section'
     | '/_authenticated/system-settings/site/$section'
-    | '/_authenticated/model-square/'
-    | '/_authenticated/status-monitor'
     | '/_authenticated/model-square/$modelId/'
     | '/_authenticated/system-settings/auth/'
     | '/_authenticated/system-settings/billing/'
@@ -884,11 +911,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConsoleLogRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/status-monitor': {
+      id: '/_authenticated/status-monitor'
+      path: '/status-monitor'
+      fullPath: '/status-monitor'
+      preLoaderRoute: typeof AuthenticatedStatusMonitorRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/image-playground': {
+      id: '/_authenticated/image-playground'
+      path: '/image-playground'
+      fullPath: '/image-playground'
+      preLoaderRoute: typeof AuthenticatedImagePlaygroundRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/chat2link': {
       id: '/_authenticated/chat2link'
       path: '/chat2link'
       fullPath: '/chat2link'
       preLoaderRoute: typeof AuthenticatedChat2linkRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/api-verify': {
+      id: '/_authenticated/api-verify'
+      path: '/api-verify'
+      fullPath: '/api-verify'
+      preLoaderRoute: typeof AuthenticatedApiVerifyRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/(errors)/503': {
@@ -1045,6 +1093,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedModelsIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/model-square/': {
+      id: '/_authenticated/model-square/'
+      path: '/model-square'
+      fullPath: '/model-square/'
+      preLoaderRoute: typeof AuthenticatedModelSquareIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/keys/': {
       id: '/_authenticated/keys/'
       path: '/keys'
@@ -1150,19 +1205,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSystemSettingsBillingIndexRouteImport
       parentRoute: typeof AuthenticatedSystemSettingsRouteRoute
     }
-    '/_authenticated/model-square/': {
-      id: '/_authenticated/model-square/'
-      path: '/model-square'
-      fullPath: '/model-square/'
-      preLoaderRoute: typeof AuthenticatedModelSquareIndexRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/status-monitor': {
-      id: '/_authenticated/status-monitor'
-      path: '/status-monitor'
-      fullPath: '/status-monitor'
-      preLoaderRoute: typeof AuthenticatedStatusMonitorRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+    '/_authenticated/system-settings/auth/': {
+      id: '/_authenticated/system-settings/auth/'
+      path: '/auth'
+      fullPath: '/system-settings/auth/'
+      preLoaderRoute: typeof AuthenticatedSystemSettingsAuthIndexRouteImport
+      parentRoute: typeof AuthenticatedSystemSettingsRouteRoute
     }
     '/_authenticated/model-square/$modelId/': {
       id: '/_authenticated/model-square/$modelId/'
@@ -1170,13 +1218,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/model-square/$modelId/'
       preLoaderRoute: typeof AuthenticatedModelSquareModelIdIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/system-settings/auth/': {
-      id: '/_authenticated/system-settings/auth/'
-      path: '/auth'
-      fullPath: '/system-settings/auth/'
-      preLoaderRoute: typeof AuthenticatedSystemSettingsAuthIndexRouteImport
-      parentRoute: typeof AuthenticatedSystemSettingsRouteRoute
     }
     '/_authenticated/system-settings/site/$section': {
       id: '/_authenticated/system-settings/site/$section'
@@ -1263,9 +1304,6 @@ interface AuthenticatedSystemSettingsRouteRouteChildren {
   AuthenticatedSystemSettingsOperationsSectionRoute: typeof AuthenticatedSystemSettingsOperationsSectionRoute
   AuthenticatedSystemSettingsSecuritySectionRoute: typeof AuthenticatedSystemSettingsSecuritySectionRoute
   AuthenticatedSystemSettingsSiteSectionRoute: typeof AuthenticatedSystemSettingsSiteSectionRoute
-  AuthenticatedModelSquareIndexRoute: typeof AuthenticatedModelSquareIndexRoute
-  AuthenticatedStatusMonitorRoute: typeof AuthenticatedStatusMonitorRoute
-  AuthenticatedModelSquareModelIdIndexRoute: typeof AuthenticatedModelSquareModelIdIndexRoute
   AuthenticatedSystemSettingsAuthIndexRoute: typeof AuthenticatedSystemSettingsAuthIndexRoute
   AuthenticatedSystemSettingsBillingIndexRoute: typeof AuthenticatedSystemSettingsBillingIndexRoute
   AuthenticatedSystemSettingsContentIndexRoute: typeof AuthenticatedSystemSettingsContentIndexRoute
@@ -1316,7 +1354,10 @@ const AuthenticatedSystemSettingsRouteRouteWithChildren =
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedSystemSettingsRouteRoute: typeof AuthenticatedSystemSettingsRouteRouteWithChildren
+  AuthenticatedApiVerifyRoute: typeof AuthenticatedApiVerifyRoute
   AuthenticatedChat2linkRoute: typeof AuthenticatedChat2linkRoute
+  AuthenticatedImagePlaygroundRoute: typeof AuthenticatedImagePlaygroundRoute
+  AuthenticatedStatusMonitorRoute: typeof AuthenticatedStatusMonitorRoute
   AuthenticatedChatChatIdRoute: typeof AuthenticatedChatChatIdRoute
   AuthenticatedDashboardSectionRoute: typeof AuthenticatedDashboardSectionRoute
   AuthenticatedErrorsErrorRoute: typeof AuthenticatedErrorsErrorRoute
@@ -1325,6 +1366,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedChannelsIndexRoute: typeof AuthenticatedChannelsIndexRoute
   AuthenticatedDashboardIndexRoute: typeof AuthenticatedDashboardIndexRoute
   AuthenticatedKeysIndexRoute: typeof AuthenticatedKeysIndexRoute
+  AuthenticatedModelSquareIndexRoute: typeof AuthenticatedModelSquareIndexRoute
   AuthenticatedModelsIndexRoute: typeof AuthenticatedModelsIndexRoute
   AuthenticatedPlaygroundIndexRoute: typeof AuthenticatedPlaygroundIndexRoute
   AuthenticatedProfileIndexRoute: typeof AuthenticatedProfileIndexRoute
@@ -1333,12 +1375,16 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedUsageLogsIndexRoute: typeof AuthenticatedUsageLogsIndexRoute
   AuthenticatedUsersIndexRoute: typeof AuthenticatedUsersIndexRoute
   AuthenticatedWalletIndexRoute: typeof AuthenticatedWalletIndexRoute
+  AuthenticatedModelSquareModelIdIndexRoute: typeof AuthenticatedModelSquareModelIdIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedSystemSettingsRouteRoute:
     AuthenticatedSystemSettingsRouteRouteWithChildren,
+  AuthenticatedApiVerifyRoute: AuthenticatedApiVerifyRoute,
   AuthenticatedChat2linkRoute: AuthenticatedChat2linkRoute,
+  AuthenticatedImagePlaygroundRoute: AuthenticatedImagePlaygroundRoute,
+  AuthenticatedStatusMonitorRoute: AuthenticatedStatusMonitorRoute,
   AuthenticatedChatChatIdRoute: AuthenticatedChatChatIdRoute,
   AuthenticatedDashboardSectionRoute: AuthenticatedDashboardSectionRoute,
   AuthenticatedErrorsErrorRoute: AuthenticatedErrorsErrorRoute,
@@ -1347,6 +1393,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedChannelsIndexRoute: AuthenticatedChannelsIndexRoute,
   AuthenticatedDashboardIndexRoute: AuthenticatedDashboardIndexRoute,
   AuthenticatedKeysIndexRoute: AuthenticatedKeysIndexRoute,
+  AuthenticatedModelSquareIndexRoute: AuthenticatedModelSquareIndexRoute,
   AuthenticatedModelsIndexRoute: AuthenticatedModelsIndexRoute,
   AuthenticatedPlaygroundIndexRoute: AuthenticatedPlaygroundIndexRoute,
   AuthenticatedProfileIndexRoute: AuthenticatedProfileIndexRoute,
@@ -1356,6 +1403,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedUsageLogsIndexRoute: AuthenticatedUsageLogsIndexRoute,
   AuthenticatedUsersIndexRoute: AuthenticatedUsersIndexRoute,
   AuthenticatedWalletIndexRoute: AuthenticatedWalletIndexRoute,
+  AuthenticatedModelSquareModelIdIndexRoute:
+    AuthenticatedModelSquareModelIdIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
