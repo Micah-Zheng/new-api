@@ -18,6 +18,8 @@ function ApiVerify() {
   const [didTimeout, setDidTimeout] = useState(false)
 
   useEffect(() => {
+    setIsLoading(true)
+    setDidTimeout(false)
     const timer = window.setTimeout(() => setDidTimeout(true), LOAD_TIMEOUT_MS)
     return () => window.clearTimeout(timer)
   }, [])
@@ -59,7 +61,7 @@ function ApiVerify() {
             setIsLoading(false)
             setDidTimeout(false)
           }}
-          sandbox='allow-scripts allow-same-origin allow-forms'
+          sandbox='allow-scripts allow-forms'
           allow='clipboard-read; clipboard-write'
           referrerPolicy='no-referrer'
         />

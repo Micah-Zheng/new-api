@@ -8,7 +8,7 @@ import { useActiveChatKey } from '@/features/chat/hooks/use-active-chat-key'
 
 const IMAGE_PLAYGROUND_BASE_URL = 'https://api.tcp.red/image-playground/'
 const IMAGE_PLAYGROUND_SERVER_URL = 'https://api.tcp.red/v1'
-const DEDICATED_KEY_NAME = 'image-playground'
+const DEDICATED_KEY_NAME = '图片工坊-自动创建'
 const LOAD_TIMEOUT_MS = 15_000
 
 export const Route = createFileRoute('/_authenticated/image-playground')({
@@ -24,7 +24,7 @@ function ImagePlayground() {
     useActiveChatKey(true, DEDICATED_KEY_NAME)
 
   const iframeSrc = apiKey
-    ? `${IMAGE_PLAYGROUND_BASE_URL}?apiKey=${encodeURIComponent(apiKey)}&apiUrl=${encodeURIComponent(IMAGE_PLAYGROUND_SERVER_URL)}`
+    ? `${IMAGE_PLAYGROUND_BASE_URL}?apiKey=${encodeURIComponent(apiKey)}&apiUrl=${encodeURIComponent(IMAGE_PLAYGROUND_SERVER_URL)}&codexCli=true`
     : undefined
 
   useEffect(() => {
@@ -111,7 +111,6 @@ function ImagePlayground() {
             setIsLoading(false)
             setDidTimeout(false)
           }}
-          sandbox='allow-scripts allow-same-origin allow-forms allow-popups'
           allow='clipboard-read; clipboard-write'
           referrerPolicy='no-referrer'
         />
