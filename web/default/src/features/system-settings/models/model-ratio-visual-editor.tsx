@@ -356,15 +356,15 @@ export const ModelRatioVisualEditor = memo(
         const audio = audioMap[name]?.toString() || ''
         const audioCompletion = audioCompletionMap[name]?.toString() || ''
 
-        // Read per-resolution config from image_model_setting
+        // Read per-resolution config from image_model_setting.models
+        // The prop value is the raw models map JSON (e.g. {"gpt-image-2": {...}})
         type ImgCfg = { billing_mode?: string; price_1k?: number; price_2k?: number; price_4k?: number }
-        const imgSetting = safeJsonParse<{ models?: Record<string, ImgCfg> }>(
+        const imgModelsMap = safeJsonParse<Record<string, ImgCfg>>(
           imageModelSetting,
-          { fallback: { models: {} }, silent: true }
+          { fallback: {}, silent: true }
         )
-        const imgCfg: ImgCfg | undefined = imgSetting.models?.[name]
+        const imgCfg: ImgCfg | undefined = imgModelsMap[name]
         const isPerResolution = imgCfg?.billing_mode === 'per_size'
-
         const modeForModel = billingModeMap[name]
         if (modeForModel === 'tiered_expr') {
           // Tiered_expr models may also retain ratio/price values as fallback
@@ -877,11 +877,11 @@ export const ModelRatioVisualEditor = memo(
           data.perRequestSubMode === 'per-resolution'
         ) {
           type ImgCfg = { billing_mode: string; price_1k?: number; price_2k?: number; price_4k?: number }
-          const imgSetting = safeJsonParse<{ models?: Record<string, ImgCfg> }>(
+          // imageModelSetting prop is the raw models map JSON
+          const imgModels: Record<string, ImgCfg> = safeJsonParse<Record<string, ImgCfg>>(
             imageModelSetting,
-            { fallback: { models: {} }, silent: true }
+            { fallback: {}, silent: true }
           )
-          const imgModels: Record<string, ImgCfg> = imgSetting.models ?? {}
 
           targetNames.forEach((name) => {
             const cfg: ImgCfg = { billing_mode: 'per_size' }
@@ -894,7 +894,7 @@ export const ModelRatioVisualEditor = memo(
             imgModels[name] = cfg
           })
 
-          onChange('image_model_setting', JSON.stringify({ models: imgModels }))
+          onChange('image_model_setting.models', JSON.stringify(imgModels))
         }
       },
       [

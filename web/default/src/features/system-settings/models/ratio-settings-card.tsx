@@ -386,7 +386,7 @@ export function RatioSettingsCard({
       const apiKeyMap: Record<string, string> = {
         BillingMode: 'billing_setting.billing_mode',
         BillingExpr: 'billing_setting.billing_expr',
-        ImageModelSetting: 'image_model_setting',
+        ImageModelSetting: 'image_model_setting.models',
       }
 
       const updates = (

@@ -119,6 +119,7 @@ export const ModelRatioForm = memo(function ModelRatioForm({
                   'billing_setting.billing_mode': 'BillingMode',
                   'billing_setting.billing_expr': 'BillingExpr',
                   'image_model_setting': 'ImageModelSetting',
+                  'image_model_setting.models': 'ImageModelSetting',
                 }
                 const formField =
                   fieldMap[field] || (field as keyof ModelFormValues)
