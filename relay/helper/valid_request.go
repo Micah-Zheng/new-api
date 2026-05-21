@@ -212,6 +212,12 @@ func GetAndValidOpenAIImageRequest(c *gin.Context, relayMode int) (*dto.ImageReq
 			if imageRequest.Quality == "" {
 				imageRequest.Quality = "auto"
 			}
+		} else if imageRequest.Model == "gpt-image-2" {
+			// gpt-image-2 accepts flexible sizes; no strict validation needed.
+			// Default quality to "high" to match OpenAI's default behaviour.
+			if imageRequest.Quality == "" {
+				imageRequest.Quality = "high"
+			}
 		}
 
 		//if imageRequest.Prompt == "" {
