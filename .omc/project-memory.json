@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "lastScanned": 1777608667163,
+  "lastScanned": 1779353547393,
   "projectRoot": "/Users/micahzheng/projects/new-api",
   "techStack": {
     "languages": [
@@ -56,7 +56,7 @@
       "path": "bin",
       "purpose": "Executable scripts",
       "fileCount": 3,
-      "lastAccessed": 1777608667067,
+      "lastAccessed": 1779353547354,
       "keyFiles": [
         "migration_v0.2-v0.3.sql",
         "migration_v0.3-v0.4.sql",
@@ -67,7 +67,7 @@
       "path": "common",
       "purpose": null,
       "fileCount": 45,
-      "lastAccessed": 1777608667068,
+      "lastAccessed": 1779353547355,
       "keyFiles": [
         "api_type.go",
         "audio.go",
@@ -80,7 +80,7 @@
       "path": "constant",
       "purpose": null,
       "fileCount": 14,
-      "lastAccessed": 1777608667069,
+      "lastAccessed": 1779353547355,
       "keyFiles": [
         "README.md",
         "api_type.go",
@@ -92,8 +92,8 @@
     "controller": {
       "path": "controller",
       "purpose": null,
-      "fileCount": 67,
-      "lastAccessed": 1777608667071,
+      "fileCount": 71,
+      "lastAccessed": 1779353547356,
       "keyFiles": [
         "billing.go",
         "channel-billing.go",
@@ -105,21 +105,21 @@
     "docs": {
       "path": "docs",
       "purpose": "Documentation",
-      "fileCount": 5,
-      "lastAccessed": 1777608667071,
+      "fileCount": 6,
+      "lastAccessed": 1779353547357,
       "keyFiles": [
         "ionet-client.md",
+        "new-api-custom-sync-SOP.md",
         "private-deploy-sop.md",
         "translation-glossary.fr.md",
-        "translation-glossary.md",
-        "translation-glossary.ru.md"
+        "translation-glossary.md"
       ]
     },
     "dto": {
       "path": "dto",
       "purpose": null,
       "fileCount": 29,
-      "lastAccessed": 1777608667073,
+      "lastAccessed": 1779353547357,
       "keyFiles": [
         "audio.go",
         "channel_settings.go",
@@ -132,7 +132,7 @@
       "path": "electron",
       "purpose": null,
       "fileCount": 12,
-      "lastAccessed": 1777608667074,
+      "lastAccessed": 1779353547357,
       "keyFiles": [
         "README.md",
         "build.sh",
@@ -145,7 +145,7 @@
       "path": "i18n",
       "purpose": null,
       "fileCount": 2,
-      "lastAccessed": 1777608667076,
+      "lastAccessed": 1779353547358,
       "keyFiles": [
         "i18n.go",
         "keys.go"
@@ -155,7 +155,7 @@
       "path": "logger",
       "purpose": null,
       "fileCount": 1,
-      "lastAccessed": 1777608667077,
+      "lastAccessed": 1779353547358,
       "keyFiles": [
         "logger.go"
       ]
@@ -163,8 +163,8 @@
     "middleware": {
       "path": "middleware",
       "purpose": "Middleware",
-      "fileCount": 21,
-      "lastAccessed": 1777608667081,
+      "fileCount": 23,
+      "lastAccessed": 1779353547358,
       "keyFiles": [
         "auth.go",
         "body_cleanup.go",
@@ -176,8 +176,8 @@
     "model": {
       "path": "model",
       "purpose": null,
-      "fileCount": 36,
-      "lastAccessed": 1777608667082,
+      "fileCount": 38,
+      "lastAccessed": 1779353547359,
       "keyFiles": [
         "ability.go",
         "channel.go",
@@ -190,7 +190,7 @@
       "path": "oauth",
       "purpose": null,
       "fileCount": 8,
-      "lastAccessed": 1777608667082,
+      "lastAccessed": 1779353547359,
       "keyFiles": [
         "discord.go",
         "generic.go",
@@ -203,14 +203,14 @@
       "path": "pkg",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1777608667085,
+      "lastAccessed": 1779353547367,
       "keyFiles": []
     },
     "relay": {
       "path": "relay",
       "purpose": null,
       "fileCount": 14,
-      "lastAccessed": 1777608667087,
+      "lastAccessed": 1779353547368,
       "keyFiles": [
         "audio_handler.go",
         "chat_completions_via_responses.go",
@@ -223,7 +223,7 @@
       "path": "router",
       "purpose": null,
       "fileCount": 6,
-      "lastAccessed": 1777608667089,
+      "lastAccessed": 1779353547368,
       "keyFiles": [
         "api-router.go",
         "dashboard.go",
@@ -235,8 +235,8 @@
     "service": {
       "path": "service",
       "purpose": null,
-      "fileCount": 52,
-      "lastAccessed": 1777608667090,
+      "fileCount": 54,
+      "lastAccessed": 1779353547368,
       "keyFiles": [
         "audio.go",
         "billing.go",
@@ -249,7 +249,7 @@
       "path": "setting",
       "purpose": null,
       "fileCount": 10,
-      "lastAccessed": 1777608667091,
+      "lastAccessed": 1779353547369,
       "keyFiles": [
         "auto_group.go",
         "chat.go",
@@ -262,7 +262,7 @@
       "path": "types",
       "purpose": "Type definitions",
       "fileCount": 9,
-      "lastAccessed": 1777608667091,
+      "lastAccessed": 1779353547369,
       "keyFiles": [
         "channel_error.go",
         "error.go",
@@ -275,14 +275,14 @@
       "path": "web",
       "purpose": null,
       "fileCount": 1,
-      "lastAccessed": 1777608667092,
+      "lastAccessed": 1779353547369,
       "keyFiles": []
     },
     "setting/config": {
       "path": "setting/config",
       "purpose": "Configuration files",
       "fileCount": 2,
-      "lastAccessed": 1777608667095,
+      "lastAccessed": 1779353547372,
       "keyFiles": [
         "config.go",
         "config_test.go"
