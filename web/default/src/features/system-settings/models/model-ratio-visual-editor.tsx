@@ -346,6 +346,19 @@ export const ModelRatioVisualEditor = memo(
         ...Object.keys(billingExprMap),
       ])
 
+      // Parse imageModelSetting once outside the per-model map to avoid
+      // redundant JSON parsing on every iteration.
+      type ImgCfg = {
+        billing_mode?: string
+        price_1k?: number
+        price_2k?: number
+        price_4k?: number
+      }
+      const imgModelsMap = safeJsonParse<Record<string, ImgCfg>>(
+        imageModelSetting,
+        { fallback: {}, silent: true }
+      )
+
       const modelData: ModelRow[] = Array.from(modelNames).map((name) => {
         const price = priceMap[name]?.toString() || ''
         const ratio = ratioMap[name]?.toString() || ''
@@ -357,12 +370,7 @@ export const ModelRatioVisualEditor = memo(
         const audioCompletion = audioCompletionMap[name]?.toString() || ''
 
         // Read per-resolution config from image_model_setting.models
-        // The prop value is the raw models map JSON (e.g. {"gpt-image-2": {...}})
-        type ImgCfg = { billing_mode?: string; price_1k?: number; price_2k?: number; price_4k?: number }
-        const imgModelsMap = safeJsonParse<Record<string, ImgCfg>>(
-          imageModelSetting,
-          { fallback: {}, silent: true }
-        )
+        // The prop value is the raw image model settings map JSON.
         const imgCfg: ImgCfg | undefined = imgModelsMap[name]
         const isPerResolution = imgCfg?.billing_mode === 'per_size'
         const modeForModel = billingModeMap[name]
@@ -1114,6 +1122,7 @@ export const ModelRatioVisualEditor = memo(
       prevProps.audioCompletionRatio === nextProps.audioCompletionRatio &&
       prevProps.billingMode === nextProps.billingMode &&
       prevProps.billingExpr === nextProps.billingExpr &&
+      prevProps.imageModelSetting === nextProps.imageModelSetting &&
       prevProps.onChange === nextProps.onChange
     )
   }
