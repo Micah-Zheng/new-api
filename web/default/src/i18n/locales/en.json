@@ -2394,6 +2394,7 @@
 "Leave price fields empty to use the built-in default prices. Custom prices override the defaults.": "Leave price fields empty to use the built-in default prices. Custom prices override the defaults.",
 "Billing mode": "Billing mode",
 "Per-resolution": "Per-resolution",
+"Flat price per image by output resolution": "Flat price per image by output resolution",
 "1K price ($/img)": "1K price ($/img)",
 "2K price ($/img)": "2K price ($/img)",
 "4K price ($/img)": "4K price ($/img)",

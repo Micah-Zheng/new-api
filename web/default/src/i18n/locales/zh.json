@@ -2399,6 +2399,7 @@
 "Leave price fields empty to use the built-in default prices. Custom prices override the defaults.": "价格字段留空则使用内置默认价格，填写后将覆盖默认值。",
 "Billing mode": "计费方式",
 "Per-resolution": "按分辨率",
+"Flat price per image by output resolution": "按输出分辨率按张计费",
 "1K price ($/img)": "1K 价格（$/张）",
 "2K price ($/img)": "2K 价格（$/张）",
 "4K price ($/img)": "4K 价格（$/张）",
