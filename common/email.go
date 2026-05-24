@@ -260,14 +260,14 @@ func BuildChannelStatusEmailContent(systemName, channelName string, channelId in
 		badgeBorder = "#fca5a5"
 		statusColor = emailColorDestr
 		statusText = "已禁用"
-		consoleLink = ServerAddress + "/console/channel"
+		consoleLink = strings.TrimRight(ServerAddress, "/") + ThemeAwarePath("/console/channel")
 	} else {
 		badgeBg = "#f0fff8"
 		badgeColor = emailColorSuccess
 		badgeBorder = "#6ee7b7"
 		statusColor = emailColorSuccess
 		statusText = "已启用"
-		consoleLink = ServerAddress + "/console/channel"
+		consoleLink = strings.TrimRight(ServerAddress, "/") + ThemeAwarePath("/console/channel")
 	}
 
 	reasonRow := ""
@@ -360,13 +360,14 @@ func SendEmail(subject string, receiver string, content string) error {
 		return fmt.Errorf("SMTP 服务器未配置")
 	}
 	encodedSubject := fmt.Sprintf("=?UTF-8?B?%s?=", base64.StdEncoding.EncodeToString([]byte(subject)))
+	encodedFrom := fmt.Sprintf("=?UTF-8?B?%s?=", base64.StdEncoding.EncodeToString([]byte(SystemName)))
 	mail := []byte(fmt.Sprintf("To: %s\r\n"+
 		"From: %s <%s>\r\n"+
 		"Subject: %s\r\n"+
 		"Date: %s\r\n"+
 		"Message-ID: %s\r\n"+ // 添加 Message-ID 头
 		"Content-Type: text/html; charset=UTF-8\r\n\r\n%s\r\n",
-		receiver, SystemName, SMTPFrom, encodedSubject, time.Now().Format(time.RFC1123Z), id, content))
+		receiver, encodedFrom, SMTPFrom, encodedSubject, time.Now().Format(time.RFC1123Z), id, content))
 	auth := getSMTPAuth()
 	addr := fmt.Sprintf("%s:%d", SMTPServer, SMTPPort)
 	to := strings.Split(receiver, ";")
