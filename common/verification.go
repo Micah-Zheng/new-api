@@ -1,6 +1,8 @@
 package common
 
 import (
+	"crypto/rand"
+	"math/big"
 	"strings"
 	"sync"
 	"time"
@@ -24,12 +26,25 @@ var verificationMapMaxSize = 10
 var VerificationValidMinutes = 10
 
 func GenerateVerificationCode(length int) string {
-	code := uuid.New().String()
-	code = strings.Replace(code, "-", "", -1)
 	if length == 0 {
-		return code
+		// length=0 is used for password-reset tokens — keep the UUID-based token
+		code := uuid.New().String()
+		return strings.Replace(code, "-", "", -1)
 	}
-	return code[:length]
+	// For OTP verification codes: pure digits, easy to type
+	const digits = "0123456789"
+	b := make([]byte, length)
+	for i := range b {
+		n, err := rand.Int(rand.Reader, big.NewInt(int64(len(digits))))
+		if err != nil {
+			// fallback to UUID slice on crypto/rand failure
+			code := uuid.New().String()
+			code = strings.Replace(code, "-", "", -1)
+			return code[:length]
+		}
+		b[i] = digits[n.Int64()]
+	}
+	return string(b)
 }
 
 func RegisterVerificationCodeWithKey(key string, code string, purpose string) {
