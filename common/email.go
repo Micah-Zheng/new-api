@@ -260,14 +260,14 @@ func BuildChannelStatusEmailContent(systemName, channelName string, channelId in
 		badgeBorder = "#fca5a5"
 		statusColor = emailColorDestr
 		statusText = "已禁用"
-		consoleLink = "https://api.tcp.red/console/channel"
+		consoleLink = ServerAddress + "/console/channel"
 	} else {
 		badgeBg = "#f0fff8"
 		badgeColor = emailColorSuccess
 		badgeBorder = "#6ee7b7"
 		statusColor = emailColorSuccess
 		statusText = "已启用"
-		consoleLink = "https://api.tcp.red/console/channel"
+		consoleLink = ServerAddress + "/console/channel"
 	}
 
 	reasonRow := ""
