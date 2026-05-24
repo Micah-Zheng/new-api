@@ -180,7 +180,7 @@ func BuildVerificationEmailContent(systemName, code string, validMinutes int) st
 		emailColorFg, code,
 		emailColorMutedFg, validMinutes,
 	)
-	return BuildEmailHTML(systemName, body, false)
+	return BuildEmailHTML(systemName, body, true)
 }
 
 // BuildPasswordResetEmailContent returns the HTML body for password-reset emails.
@@ -247,7 +247,7 @@ func BuildQuotaWarningEmailContent(systemName, prompt, quotaStr, topUpLink strin
 		btn,
 		emailColorMutedFg, topUpLink, emailColorFg, topUpLink,
 	)
-	return BuildEmailHTML(systemName, body, false)
+	return BuildEmailHTML(systemName, body, true)
 }
 
 // BuildChannelStatusEmailContent returns the HTML body for channel-disable/enable notifications.
@@ -322,7 +322,7 @@ func BuildChannelStatusEmailContent(systemName, channelName string, channelId in
 		reasonRow,
 		btn,
 	)
-	return BuildEmailHTML(systemName, body, false)
+	return BuildEmailHTML(systemName, body, true)
 }
 
 func generateMessageID() (string, error) {
