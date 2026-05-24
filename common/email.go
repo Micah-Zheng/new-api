@@ -251,23 +251,20 @@ func BuildQuotaWarningEmailContent(systemName, prompt, quotaStr, topUpLink strin
 }
 
 // BuildChannelStatusEmailContent returns the HTML body for channel-disable/enable notifications.
-func BuildChannelStatusEmailContent(systemName, channelName string, channelId int, disabled bool, reason string) string {
+func BuildChannelStatusEmailContent(systemName, channelName string, channelId int, disabled bool, reason, consoleLink string) string {
 	var badgeBg, badgeColor, badgeBorder, statusColor, statusText string
-	var consoleLink string
 	if disabled {
 		badgeBg = "#fff0f0"
 		badgeColor = emailColorDestr
 		badgeBorder = "#fca5a5"
 		statusColor = emailColorDestr
 		statusText = "已禁用"
-		consoleLink = strings.TrimRight(ServerAddress, "/") + ThemeAwarePath("/console/channel")
 	} else {
 		badgeBg = "#f0fff8"
 		badgeColor = emailColorSuccess
 		badgeBorder = "#6ee7b7"
 		statusColor = emailColorSuccess
 		statusText = "已启用"
-		consoleLink = strings.TrimRight(ServerAddress, "/") + ThemeAwarePath("/console/channel")
 	}
 
 	reasonRow := ""

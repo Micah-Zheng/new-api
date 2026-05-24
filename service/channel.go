@@ -8,6 +8,7 @@ import (
 	"github.com/QuantumNous/new-api/dto"
 	"github.com/QuantumNous/new-api/model"
 	"github.com/QuantumNous/new-api/setting/operation_setting"
+	"github.com/QuantumNous/new-api/setting/system_setting"
 	"github.com/QuantumNous/new-api/types"
 )
 
@@ -28,7 +29,8 @@ func DisableChannel(channelError types.ChannelError, reason string) {
 	success := model.UpdateChannelStatus(channelError.ChannelId, channelError.UsingKey, common.ChannelStatusAutoDisabled, reason)
 	if success {
 		subject := fmt.Sprintf("通道「%s」（#%d）已被禁用", channelError.ChannelName, channelError.ChannelId)
-		content := common.BuildChannelStatusEmailContent(common.SystemName, channelError.ChannelName, channelError.ChannelId, true, reason)
+		consoleLink := strings.TrimRight(system_setting.ServerAddress, "/") + common.ThemeAwarePath("/console/channel")
+		content := common.BuildChannelStatusEmailContent(common.SystemName, channelError.ChannelName, channelError.ChannelId, true, reason, consoleLink)
 		NotifyRootUser(formatNotifyType(channelError.ChannelId, common.ChannelStatusAutoDisabled), subject, content)
 	}
 }
@@ -37,7 +39,8 @@ func EnableChannel(channelId int, usingKey string, channelName string) {
 	success := model.UpdateChannelStatus(channelId, usingKey, common.ChannelStatusEnabled, "")
 	if success {
 		subject := fmt.Sprintf("通道「%s」（#%d）已被启用", channelName, channelId)
-		content := common.BuildChannelStatusEmailContent(common.SystemName, channelName, channelId, false, "")
+		consoleLink := strings.TrimRight(system_setting.ServerAddress, "/") + common.ThemeAwarePath("/console/channel")
+		content := common.BuildChannelStatusEmailContent(common.SystemName, channelName, channelId, false, "", consoleLink)
 		NotifyRootUser(formatNotifyType(channelId, common.ChannelStatusEnabled), subject, content)
 	}
 }
