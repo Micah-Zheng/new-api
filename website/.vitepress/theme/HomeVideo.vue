@@ -1,7 +1,9 @@
 <script setup>
 import { onMounted, ref } from 'vue'
+import { withBase } from 'vitepress'
 
 const videoRef = ref(null)
+const videoSrc = withBase('/bg-video.mp4')
 
 onMounted(() => {
   if (videoRef.value) {
@@ -20,7 +22,7 @@ onMounted(() => {
       playsinline
       preload="auto"
     >
-      <source src="/bg-video.mp4" type="video/mp4" />
+      <source :src="videoSrc" type="video/mp4" />
     </video>
     <div class="home-video-overlay" />
   </div>
