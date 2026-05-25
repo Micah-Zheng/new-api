@@ -4,7 +4,7 @@ import { useRoute } from 'vitepress'
 import { withBase } from 'vitepress'
 
 const videoRef = ref(null)
-const videoSrc = withBase('/bg-video.mp4')
+const videoSrc = withBase('/bg-video.mp4') + '?v=2'
 const route = useRoute()
 
 onMounted(() => {
