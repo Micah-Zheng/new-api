@@ -38,3 +38,8 @@ skills-lock.json
 .omx/
 .playwright-mcp/
 web/default/.omc/
+
+website/node_modules
+website/.vitepress/dist
+website/.vitepress/cache
+website/public/bg-video.mp4
