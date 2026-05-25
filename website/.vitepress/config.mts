@@ -3,7 +3,7 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   title: '灵枢 API',
   description: '下一代 LLM 网关和 AI 资产管理系统',
-  base: '/new-api/',
+  base: '/docs/',
 
   head: [
     ['link', { rel: 'icon', href: '/logo.png' }],
