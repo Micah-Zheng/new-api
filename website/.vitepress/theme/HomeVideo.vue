@@ -1,14 +1,21 @@
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
+import { useRoute } from 'vitepress'
 import { withBase } from 'vitepress'
 
 const videoRef = ref(null)
 const videoSrc = withBase('/bg-video.mp4')
+const route = useRoute()
 
 onMounted(() => {
   if (videoRef.value) {
     videoRef.value.playbackRate = 0.8
   }
+  document.documentElement.classList.add('has-video-bg')
+})
+
+onUnmounted(() => {
+  document.documentElement.classList.remove('has-video-bg')
 })
 </script>
 
