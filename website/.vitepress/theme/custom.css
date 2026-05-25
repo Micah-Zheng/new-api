@@ -1,0 +1,62 @@
+/* 首页背景透明化 — 所有层级 */
+body,
+#app,
+.Layout,
+.VPContent,
+.VPContent.is-home,
+.VPHome {
+  background: transparent !important;
+}
+
+.VPHero {
+  background: transparent !important;
+}
+
+/* Hero 区域文字白色 */
+.VPHero .name {
+  color: #fff !important;
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  -webkit-text-fill-color: #fff !important;
+}
+
+.VPHero .text {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.VPHero .tagline {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Feature 卡片半透明 */
+.VPFeatures .VPFeature {
+  background: rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+.VPFeatures .VPFeature .title {
+  color: #fff !important;
+}
+
+.VPFeatures .VPFeature .details {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* 导航栏半透明 */
+.is-home .VPNavBar {
+  background: rgba(0, 0, 0, 0.3) !important;
+  backdrop-filter: blur(12px);
+}
+
+/* Footer 透明化 — VPFooter 是与 VPHome 平级的元素 */
+footer.VPFooter {
+  background: transparent !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.15) !important;
+  padding: 24px 0 !important;
+}
+
+footer.VPFooter .message,
+footer.VPFooter .copyright {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
