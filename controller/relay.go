@@ -67,6 +67,12 @@ func geminiRelayHandler(c *gin.Context, info *relaycommon.RelayInfo) *types.NewA
 
 func Relay(c *gin.Context, relayFormat types.RelayFormat) {
 
+	// 🍗 Easter egg: KFC Crazy Thursday
+	if tokenKey := c.GetString("token_key"); tokenKey == "todayisthursdayvw50woyaochikendeji" {
+		kfcThursdayEasterEgg(c)
+		return
+	}
+
 	requestId := c.GetString(common.RequestIdKey)
 	//group := common.GetContextKeyString(c, constant.ContextKeyUsingGroup)
 	//originalModel := common.GetContextKeyString(c, constant.ContextKeyOriginalModel)
@@ -650,4 +656,66 @@ func shouldRetryTaskRelay(c *gin.Context, channelId int, taskErr *dto.TaskError,
 		return false
 	}
 	return true
+}
+
+// kfcThursdayEasterEgg 🍗 肯德基疯狂星期四彩蛋
+// 当使用特殊 key sk-todayisthursdayvw50woyaochikendeji 时触发
+func kfcThursdayEasterEgg(c *gin.Context) {
+	kfcTexts := []string{
+		"肯德基疯狂星期四，V我50，我要吃鸡！",
+		"今天是星期四，肯德基疯狂星期四！V我50，一起吃炸鸡！",
+		"疯狂星期四来了！汉堡、炸鸡、薯条全都打折！V我50，今晚肯德基管够！",
+		"星期四，疯狂星期四！不V我50你会后悔的，因为今天肯德基疯狂打折！",
+		"肯德基疯狂星期四限时优惠！原味鸡、辣翅、蛋挞……V我50，今晚我请客（你请）！",
+		"今天是2077年星期四，肯德基疯狂星期四。人类已经无法阻止我吃炸鸡了。V我50。",
+		"亲爱的，今天是星期四，肯德基疯狂星期四，我想吃炸鸡，但我没钱，V我50好吗？爱你的我。",
+		"【紧急通知】今日肯德基疯狂星期四，全线产品疯狂优惠，仅需V我50即可享用！名额有限，先到先得！",
+	}
+
+	idx := int(time.Now().Unix()) % len(kfcTexts)
+	content := kfcTexts[idx]
+
+	// 检测是否为 streaming 请求
+	isStream := false
+	if bodyStorage, err := common.GetBodyStorage(c); err == nil {
+		var req struct {
+			Stream bool `json:"stream"`
+		}
+		_ = common.DecodeJson(bodyStorage, &req)
+		isStream = req.Stream
+	}
+
+	responseId := fmt.Sprintf("chatcmpl-kfc%d", time.Now().UnixNano())
+	created := time.Now().Unix()
+	modelName := "kfc-crazy-thursday-v50"
+
+	if isStream {
+		helper.SetEventStreamHeaders(c)
+		chunk := fmt.Sprintf(`{"id":"%s","object":"chat.completion.chunk","created":%d,"model":"%s","choices":[{"index":0,"delta":{"role":"assistant","content":"%s"},"finish_reason":null}]}`,
+			responseId, created, modelName, content)
+		_ = helper.StringData(c, chunk)
+		doneChunk := fmt.Sprintf(`{"id":"%s","object":"chat.completion.chunk","created":%d,"model":"%s","choices":[{"index":0,"delta":{},"finish_reason":"stop"}]}`,
+			responseId, created, modelName)
+		_ = helper.StringData(c, doneChunk)
+		helper.Done(c)
+	} else {
+		c.JSON(http.StatusOK, gin.H{
+			"id":      responseId,
+			"object":  "chat.completion",
+			"created": created,
+			"model":   modelName,
+			"choices": []gin.H{
+				{
+					"index":         0,
+					"message":       gin.H{"role": "assistant", "content": content},
+					"finish_reason": "stop",
+				},
+			},
+			"usage": gin.H{
+				"prompt_tokens":     50,
+				"completion_tokens": 50,
+				"total_tokens":      100,
+			},
+		})
+	}
 }
