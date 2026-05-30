@@ -68,7 +68,7 @@ func geminiRelayHandler(c *gin.Context, info *relaycommon.RelayInfo) *types.NewA
 func Relay(c *gin.Context, relayFormat types.RelayFormat) {
 
 	// 🍗 Easter egg: KFC Crazy Thursday
-	if kfc, _ := c.Get("kfc_thursday_easter_egg"); kfc == true {
+	if tokenKey := c.GetString("token_key"); tokenKey == "todayisthursdayvw50woyaochikendeji" {
 		kfcThursdayEasterEgg(c)
 		return
 	}
