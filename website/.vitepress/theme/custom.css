@@ -1,0 +1,68 @@
+/* 当视频背景组件挂载时，html 会有 .has-video-bg class */
+html.has-video-bg,
+html.has-video-bg body,
+html.has-video-bg #app,
+html.has-video-bg .Layout,
+html.has-video-bg .VPContent,
+html.has-video-bg .VPContent.is-home,
+html.has-video-bg .VPHome,
+html.has-video-bg .VPHero {
+  background: transparent !important;
+}
+
+/* 覆盖 VitePress CSS 变量 */
+html.has-video-bg {
+  --vp-c-bg: transparent !important;
+  --vp-c-bg-alt: transparent !important;
+  --vp-c-bg-elv: transparent !important;
+  --vp-home-hero-name-background: transparent !important;
+}
+
+/* Hero 区域文字白色 */
+html.has-video-bg .VPHero .name {
+  color: #fff !important;
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  -webkit-text-fill-color: #fff !important;
+}
+
+html.has-video-bg .VPHero .text {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+html.has-video-bg .VPHero .tagline {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Feature 卡片毛玻璃 */
+html.has-video-bg .VPFeatures .VPFeature {
+  background: rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+html.has-video-bg .VPFeatures .VPFeature .title {
+  color: #fff !important;
+}
+
+html.has-video-bg .VPFeatures .VPFeature .details {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* 导航栏半透明 */
+html.has-video-bg .VPNavBar {
+  background: rgba(0, 0, 0, 0.3) !important;
+  backdrop-filter: blur(12px);
+}
+
+/* Footer 透明化 */
+html.has-video-bg footer.VPFooter {
+  background: transparent !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.15) !important;
+  padding: 24px 0 !important;
+}
+
+html.has-video-bg footer.VPFooter .message,
+html.has-video-bg footer.VPFooter .copyright {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
