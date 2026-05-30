@@ -689,6 +689,24 @@ func kfcThursdayEasterEgg(c *gin.Context) {
 	created := time.Now().Unix()
 	modelName := "kfc-crazy-thursday-v50"
 
+	// 记录使用日志（quota=0，不扣费）
+	userId := c.GetInt("id")
+	tokenId := c.GetInt("token_id")
+	tokenName := c.GetString("token_name")
+	model.RecordConsumeLog(c, userId, model.RecordConsumeLogParams{
+		ChannelId:        0,
+		PromptTokens:     0,
+		CompletionTokens: 0,
+		ModelName:        modelName,
+		TokenName:        tokenName,
+		Quota:            0,
+		Content:          "🍗 " + content,
+		TokenId:          tokenId,
+		UseTimeSeconds:   0,
+		IsStream:         isStream,
+		Group:            c.GetString("group"),
+	})
+
 	if isStream {
 		helper.SetEventStreamHeaders(c)
 		chunk := fmt.Sprintf(`{"id":"%s","object":"chat.completion.chunk","created":%d,"model":"%s","choices":[{"index":0,"delta":{"role":"assistant","content":"%s"},"finish_reason":null}]}`,
