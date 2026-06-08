@@ -15,7 +15,7 @@ export function PingBadge({ state, onTest }: PingBadgeProps) {
         variant="outline"
         size="sm"
         onClick={onTest}
-        className="text-xs h-7 px-2"
+        className="h-8 px-3 text-xs"
       >
         Test
       </Button>
@@ -24,8 +24,8 @@ export function PingBadge({ state, onTest }: PingBadgeProps) {
 
   if (state.status === 'testing') {
     return (
-      <Badge variant="secondary" className="text-xs h-7 px-2">
-        Testing...
+      <Badge variant="secondary" className="h-8 min-w-[60px] justify-center px-3 text-xs font-medium">
+        <span className="animate-pulse">Testing...</span>
       </Badge>
     )
   }
@@ -35,7 +35,7 @@ export function PingBadge({ state, onTest }: PingBadgeProps) {
     return (
       <Badge
         variant="secondary"
-        className={`text-xs h-7 px-2 cursor-pointer ${colorClass}`}
+        className={`h-8 min-w-[60px] cursor-pointer justify-center px-3 text-xs font-semibold transition-all hover:scale-105 ${colorClass}`}
         onClick={onTest}
         role="button"
         tabIndex={0}
@@ -54,7 +54,10 @@ export function PingBadge({ state, onTest }: PingBadgeProps) {
   return (
     <Badge
       variant="secondary"
-      className="text-xs h-7 px-2 text-muted-foreground"
+      className="h-8 min-w-[60px] justify-center px-3 text-xs text-muted-foreground"
+      onClick={onTest}
+      role="button"
+      tabIndex={0}
     >
       N/A
     </Badge>

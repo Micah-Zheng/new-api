@@ -28,11 +28,18 @@ export function ApiRequestUrlCard() {
   }, [status])
 
   return (
-    <Card className="gap-0 py-4">
-      <CardContent className="px-4 sm:px-6">
-        <div className="flex flex-col gap-3">
-          <p className="text-sm font-medium">{t('API Request URLs')}</p>
-          <div className="space-y-0">
+    <Card className="overflow-hidden">
+      <CardContent className="p-6">
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-base font-semibold">{t('API Request URLs')}</h3>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Latency auto-detected on page load
+              </p>
+            </div>
+          </div>
+          <div className="space-y-2">
             {apiUrls.map((item) => (
               <ApiUrlRow key={item.id} item={item} />
             ))}

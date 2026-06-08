@@ -23,20 +23,20 @@ export function ApiUrlRow({ item }: ApiUrlRowProps) {
   }
 
   return (
-    <div className="flex items-center justify-between border-b py-2 last:border-0 gap-2">
-      <div className="min-w-0 flex-1">
-        <p className="mb-0.5 text-xs text-muted-foreground">{item.label}</p>
+    <div className="group flex items-center justify-between rounded-lg border border-border/50 bg-card/50 px-4 py-3 transition-colors hover:border-border hover:bg-card">
+      <div className="min-w-0 flex-1 space-y-1">
+        <p className="text-xs font-medium text-muted-foreground">{item.label}</p>
         <code className="block truncate font-mono text-sm text-foreground">
           {item.url}
         </code>
       </div>
-      <div className="flex shrink-0 items-center gap-2">
+      <div className="ml-4 flex shrink-0 items-center gap-2">
         <PingBadge state={pingState} onTest={() => refetch()} />
         <CopyButton
           value={item.url}
           variant="outline"
           size="sm"
-          className="h-7"
+          className="h-8"
           tooltip="Copy URL"
         />
       </div>
