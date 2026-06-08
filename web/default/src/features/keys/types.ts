@@ -104,3 +104,21 @@ export type ApiKeysDialogType =
   | 'delete'
   | 'batch-delete'
   | 'cc-switch'
+
+// ============================================================================
+// API Request URL Types
+// ============================================================================
+
+export interface ApiUrlItem {
+  id: string
+  label: string
+  url: string
+}
+
+export type PingStatus = 'idle' | 'testing' | 'success' | 'error'
+
+export interface PingState {
+  status: PingStatus
+  latencyMs?: number
+  errorReason?: 'timeout' | 'network'
+}
