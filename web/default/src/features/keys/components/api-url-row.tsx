@@ -15,10 +15,12 @@ export function ApiUrlRow({ item }: ApiUrlRowProps) {
       ? 'testing'
       : isError
         ? 'error'
-        : data !== undefined
+        : data?.error
+          ? 'error'
+          : data?.latency !== null && data?.latency !== undefined
           ? 'success'
           : 'idle',
-    latencyMs: data,
+    latencyMs: data?.latency ?? undefined,
     errorReason: isError ? 'network' : undefined,
   }
 

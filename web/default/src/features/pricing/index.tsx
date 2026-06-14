@@ -193,25 +193,25 @@ export function Pricing(props: PricingProps = {}) {
           }}
         />
       )}
-        <PageTransition
-          className={`relative mx-auto w-full max-w-[1800px] px-3 pb-8 sm:px-6 sm:pb-10 xl:px-8 ${
-            isCompactHero ? 'pt-4 sm:pt-5' : 'pt-16 sm:pt-20'
-          }`}
-        >
-          {showHero && (
-            <header
-              className={`mx-auto max-w-3xl ${
-                isCompactHero
-                  ? 'mb-4 text-left sm:mb-5'
-                  : 'mb-5 pt-5 text-center sm:mb-10 sm:pt-10'
-              }`}
-            >
-              {!isCompactHero && (
-                <p className='text-muted-foreground mb-3 text-xs font-medium tracking-widest uppercase'>
-                  {t('Models Directory')}
-                </p>
-              )}
-              <div className={isCompactHero ? 'flex flex-col gap-3' : undefined}>
+      <PageTransition
+        className={`relative mx-auto w-full max-w-[1800px] px-3 pb-8 sm:px-6 sm:pb-10 xl:px-8 ${
+          isCompactHero ? 'pt-4 sm:pt-5' : 'pt-16 sm:pt-20'
+        }`}
+      >
+        {showHero && (
+          <header
+            className={`mx-auto max-w-3xl ${
+              isCompactHero
+                ? 'mb-4 text-left sm:mb-5'
+                : 'mb-5 pt-5 text-center sm:mb-10 sm:pt-10'
+            }`}
+          >
+            {!isCompactHero && (
+              <p className='text-muted-foreground mb-3 text-xs font-medium tracking-widest uppercase'>
+                {t('Models Directory')}
+              </p>
+            )}
+            <div className={isCompactHero ? 'flex flex-col gap-3' : undefined}>
                 <div>
                   <h1
                     className={
