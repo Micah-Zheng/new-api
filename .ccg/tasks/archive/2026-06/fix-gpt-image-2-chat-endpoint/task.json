@@ -1,0 +1,12 @@
+{
+  "id": "fix-gpt-image-2-chat-endpoint",
+  "title": "修复 gpt-image-2 走 chat completions 时返回提示而非生成图片的问题",
+  "status": "completed",
+  "complexity": "M",
+  "risk": "medium",
+  "domain": "backend",
+  "currentPhase": "completed",
+  "nextAction": "已部署到服务器并验证 pricing 端点",
+  "createdAt": "2026-06-18T08:30:24+08:00",
+  "branch": "main"
+}
