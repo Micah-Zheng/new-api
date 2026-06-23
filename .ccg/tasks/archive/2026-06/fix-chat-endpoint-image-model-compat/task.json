@@ -1,0 +1,12 @@
+{
+  "id": "fix-chat-endpoint-image-model-compat",
+  "title": "兼容 iPendesign 使用 chat completions 调用 gpt-image-2 画图",
+  "status": "completed",
+  "complexity": "M",
+  "risk": "medium",
+  "domain": "backend",
+  "currentPhase": "completed",
+  "nextAction": "已实现 chat 图像模型兼容转换，待 PR 合并部署",
+  "createdAt": "2026-06-23T11:43:46+08:00",
+  "branch": "private/custom-ui"
+}

@@ -427,6 +427,12 @@ func GenRelayInfoImage(c *gin.Context, request dto.Request) *RelayInfo {
 func GenRelayInfoOpenAI(c *gin.Context, request dto.Request) *RelayInfo {
 	info := genBaseRelayInfo(c, request)
 	info.RelayFormat = types.RelayFormatOpenAI
+	if _, ok := request.(*dto.ImageRequest); ok {
+		info.RelayMode = relayconstant.RelayModeImagesGenerations
+		info.RelayFormat = types.RelayFormatOpenAIImage
+		info.RequestURLPath = "/v1/images/generations"
+		info.RequestConversionChain = []types.RelayFormat{types.RelayFormatOpenAI, types.RelayFormatOpenAIImage}
+	}
 	return info
 }
 
