@@ -24,6 +24,14 @@ func GetAndValidateRequest(c *gin.Context, format types.RelayFormat) (request dt
 	switch format {
 	case types.RelayFormatOpenAI:
 		request, err = GetAndValidateTextRequest(c, relayMode)
+		if err == nil && relayMode == relayconstant.RelayModeChatCompletions {
+			if imageRequest, converted, convertErr := ConvertChatCompletionImageRequest(c, request.(*dto.GeneralOpenAIRequest)); converted || convertErr != nil {
+				if convertErr != nil {
+					return nil, convertErr
+				}
+				request = imageRequest
+			}
+		}
 	case types.RelayFormatGemini:
 		if strings.Contains(c.Request.URL.Path, ":embedContent") {
 			request, err = GetAndValidateGeminiEmbeddingRequest(c)
@@ -53,6 +61,70 @@ func GetAndValidateRequest(c *gin.Context, format types.RelayFormat) (request dt
 		return nil, fmt.Errorf("unsupported relay format: %s", format)
 	}
 	return request, err
+}
+
+const chatCompletionImageCompatibilityKey = "chat_completion_image_compatibility"
+
+func IsChatCompletionImageCompatibility(c *gin.Context) bool {
+	if c == nil {
+		return false
+	}
+	return c.GetBool(chatCompletionImageCompatibilityKey)
+}
+
+func ConvertChatCompletionImageRequest(c *gin.Context, textRequest *dto.GeneralOpenAIRequest) (*dto.ImageRequest, bool, error) {
+	if textRequest == nil || !common.IsImageGenerationModel(textRequest.Model) {
+		return nil, false, nil
+	}
+
+	prompt := strings.TrimSpace(extractImagePromptFromChatMessages(textRequest.Messages))
+	if prompt == "" {
+		return nil, true, errors.New("field prompt is required for image generation model on chat completions")
+	}
+
+	imageRequest := &dto.ImageRequest{}
+	if err := common.UnmarshalBodyReusable(c, imageRequest); err != nil {
+		return nil, true, err
+	}
+	imageRequest.Model = textRequest.Model
+	imageRequest.Prompt = prompt
+	if imageRequest.Size == "" {
+		imageRequest.Size = textRequest.Size
+	}
+	if imageRequest.Stream == nil {
+		imageRequest.Stream = textRequest.Stream
+	}
+	if imageRequest.N == nil && textRequest.N != nil && *textRequest.N > 0 {
+		imageRequest.N = common.GetPointer(uint(*textRequest.N))
+	}
+	if imageRequest.N == nil || *imageRequest.N == 0 {
+		imageRequest.N = common.GetPointer(uint(1))
+	}
+
+	if err := applyOpenAIImageRequestDefaults(imageRequest); err != nil {
+		return nil, true, err
+	}
+
+	c.Set(chatCompletionImageCompatibilityKey, true)
+	return imageRequest, true, nil
+}
+
+func extractImagePromptFromChatMessages(messages []dto.Message) string {
+	var texts []string
+	for i := len(messages) - 1; i >= 0; i-- {
+		if messages[i].Role != "user" {
+			continue
+		}
+		for _, part := range messages[i].ParseContent() {
+			if part.Type == dto.ContentTypeText && strings.TrimSpace(part.Text) != "" {
+				texts = append(texts, strings.TrimSpace(part.Text))
+			}
+		}
+		if len(texts) > 0 {
+			break
+		}
+	}
+	return strings.Join(texts, "\n")
 }
 
 func GetAndValidAudioRequest(c *gin.Context, relayMode int) (*dto.AudioRequest, error) {
@@ -197,38 +269,8 @@ func GetAndValidOpenAIImageRequest(c *gin.Context, relayMode int) (*dto.ImageReq
 			return nil, errors.New("model is required")
 		}
 
-		if strings.Contains(imageRequest.Size, "×") {
-			return nil, errors.New("size an unexpected error occurred in the parameter, please use 'x' instead of the multiplication sign '×'")
-		}
-
-		// Not "256x256", "512x512", or "1024x1024"
-		if imageRequest.Model == "dall-e-2" || imageRequest.Model == "dall-e" {
-			if imageRequest.Size != "" && imageRequest.Size != "256x256" && imageRequest.Size != "512x512" && imageRequest.Size != "1024x1024" {
-				return nil, errors.New("size must be one of 256x256, 512x512, or 1024x1024 for dall-e-2 or dall-e")
-			}
-			if imageRequest.Size == "" {
-				imageRequest.Size = "1024x1024"
-			}
-		} else if imageRequest.Model == "dall-e-3" {
-			if imageRequest.Size != "" && imageRequest.Size != "1024x1024" && imageRequest.Size != "1024x1792" && imageRequest.Size != "1792x1024" {
-				return nil, errors.New("size must be one of 1024x1024, 1024x1792 or 1792x1024 for dall-e-3")
-			}
-			if imageRequest.Quality == "" {
-				imageRequest.Quality = "standard"
-			}
-			if imageRequest.Size == "" {
-				imageRequest.Size = "1024x1024"
-			}
-		} else if imageRequest.Model == "gpt-image-1" {
-			if imageRequest.Quality == "" {
-				imageRequest.Quality = "auto"
-			}
-		} else if imageRequest.Model == "gpt-image-2" {
-			// gpt-image-2 accepts flexible sizes; no strict validation needed.
-			// Default quality to "high" to match OpenAI's default behaviour.
-			if imageRequest.Quality == "" {
-				imageRequest.Quality = "high"
-			}
+		if err := applyOpenAIImageRequestDefaults(imageRequest); err != nil {
+			return nil, err
 		}
 
 		//if imageRequest.Prompt == "" {
@@ -241,6 +283,43 @@ func GetAndValidOpenAIImageRequest(c *gin.Context, relayMode int) (*dto.ImageReq
 	}
 
 	return imageRequest, nil
+}
+
+func applyOpenAIImageRequestDefaults(imageRequest *dto.ImageRequest) error {
+	if strings.Contains(imageRequest.Size, "×") {
+		return errors.New("size an unexpected error occurred in the parameter, please use 'x' instead of the multiplication sign '×'")
+	}
+
+	// Not "256x256", "512x512", or "1024x1024"
+	if imageRequest.Model == "dall-e-2" || imageRequest.Model == "dall-e" {
+		if imageRequest.Size != "" && imageRequest.Size != "256x256" && imageRequest.Size != "512x512" && imageRequest.Size != "1024x1024" {
+			return errors.New("size must be one of 256x256, 512x512, or 1024x1024 for dall-e-2 or dall-e")
+		}
+		if imageRequest.Size == "" {
+			imageRequest.Size = "1024x1024"
+		}
+	} else if imageRequest.Model == "dall-e-3" {
+		if imageRequest.Size != "" && imageRequest.Size != "1024x1024" && imageRequest.Size != "1024x1792" && imageRequest.Size != "1792x1024" {
+			return errors.New("size must be one of 1024x1024, 1024x1792 or 1792x1024 for dall-e-3")
+		}
+		if imageRequest.Quality == "" {
+			imageRequest.Quality = "standard"
+		}
+		if imageRequest.Size == "" {
+			imageRequest.Size = "1024x1024"
+		}
+	} else if imageRequest.Model == "gpt-image-1" {
+		if imageRequest.Quality == "" {
+			imageRequest.Quality = "auto"
+		}
+	} else if imageRequest.Model == "gpt-image-2" {
+		// gpt-image-2 accepts flexible sizes; no strict validation needed.
+		// Default quality to "high" to match OpenAI's default behaviour.
+		if imageRequest.Quality == "" {
+			imageRequest.Quality = "high"
+		}
+	}
+	return nil
 }
 
 func GetAndValidateClaudeRequest(c *gin.Context) (textRequest *dto.ClaudeRequest, err error) {

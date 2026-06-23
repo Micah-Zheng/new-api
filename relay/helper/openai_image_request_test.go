@@ -7,10 +7,13 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"strings"
 	"testing"
 
 	"github.com/QuantumNous/new-api/common"
+	"github.com/QuantumNous/new-api/dto"
 	relayconstant "github.com/QuantumNous/new-api/relay/constant"
+	"github.com/QuantumNous/new-api/types"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/require"
 )
@@ -68,4 +71,57 @@ func TestGetAndValidOpenAIImageRequestMultipartStream(t *testing.T) {
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "invalid stream value")
 	})
+}
+
+func TestGetAndValidateRequestConvertsChatImageModel(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	body := `{
+		"model":"gpt-image-2",
+		"messages":[
+			{"role":"system","content":"You are helpful."},
+			{"role":"user","content":"生成动漫武术战斗插画"}
+		],
+		"size":"1024x1024",
+		"stream":true
+	}`
+	c, _ := gin.CreateTestContext(httptest.NewRecorder())
+	c.Request = httptest.NewRequest(http.MethodPost, "/v1/chat/completions", strings.NewReader(body))
+	c.Request.Header.Set("Content-Type", "application/json")
+
+	request, err := GetAndValidateRequest(c, types.RelayFormatOpenAI)
+	require.NoError(t, err)
+	require.True(t, IsChatCompletionImageCompatibility(c))
+
+	imageRequest, ok := request.(*dto.ImageRequest)
+	require.True(t, ok)
+	require.Equal(t, "gpt-image-2", imageRequest.Model)
+	require.Equal(t, "生成动漫武术战斗插画", imageRequest.Prompt)
+	require.Equal(t, "1024x1024", imageRequest.Size)
+	require.Equal(t, "high", imageRequest.Quality)
+	require.NotNil(t, imageRequest.Stream)
+	require.True(t, *imageRequest.Stream)
+	require.NotNil(t, imageRequest.N)
+	require.Equal(t, uint(1), *imageRequest.N)
+}
+
+func TestGetAndValidateRequestLeavesTextModelAsChat(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	body := `{
+		"model":"gpt-4o-mini",
+		"messages":[{"role":"user","content":"hello"}]
+	}`
+	c, _ := gin.CreateTestContext(httptest.NewRecorder())
+	c.Request = httptest.NewRequest(http.MethodPost, "/v1/chat/completions", strings.NewReader(body))
+	c.Request.Header.Set("Content-Type", "application/json")
+
+	request, err := GetAndValidateRequest(c, types.RelayFormatOpenAI)
+	require.NoError(t, err)
+	require.False(t, IsChatCompletionImageCompatibility(c))
+
+	textRequest, ok := request.(*dto.GeneralOpenAIRequest)
+	require.True(t, ok)
+	require.Equal(t, "gpt-4o-mini", textRequest.Model)
+	require.Len(t, textRequest.Messages, 1)
 }
