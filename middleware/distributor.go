@@ -31,6 +31,11 @@ type ModelRequest struct {
 
 func Distribute() func(c *gin.Context) {
 	return func(c *gin.Context) {
+		if isOneTokenProbeRequest(c) {
+			abortWithOpenAiMessage(c, http.StatusBadRequest, "one-token probe requests are not allowed")
+			return
+		}
+
 		var channel *model.Channel
 		channelId, ok := common.GetContextKey(c, constant.ContextKeyTokenSpecificChannelId)
 		modelRequest, shouldSelectChannel, err := getModelRequest(c)
@@ -167,6 +172,41 @@ func Distribute() func(c *gin.Context) {
 			service.RecordChannelAffinity(c, channel.Id)
 		}
 	}
+}
+
+func isOneTokenProbeRequest(c *gin.Context) bool {
+	if !strings.HasPrefix(c.Request.Header.Get("Content-Type"), "application/json") {
+		return false
+	}
+
+	storage, err := common.GetBodyStorage(c)
+	if err != nil {
+		return false
+	}
+	requestBody, err := storage.Bytes()
+	if seekErr := storage.Seek(0, io.SeekStart); seekErr == nil {
+		c.Request.Body = io.NopCloser(storage)
+	}
+	if err != nil || !gjson.ValidBytes(requestBody) {
+		return false
+	}
+
+	values := gjson.GetManyBytes(
+		requestBody,
+		"max_tokens",
+		"max_completion_tokens",
+		"max_output_tokens",
+		"max_tokens_to_sample",
+		"generationConfig.maxOutputTokens",
+		"generationConfig.max_output_tokens",
+		"generation_config.max_output_tokens",
+	)
+	for _, value := range values {
+		if value.Exists() && value.Type == gjson.Number && value.Num == 1 {
+			return true
+		}
+	}
+	return false
 }
 
 // channelSupportsRequestPath reports whether a channel can serve the request path.
