@@ -1,9 +1,24 @@
-import { memo, useEffect, useMemo, useState } from 'react'
+/*
+Copyright (C) 2023-2026 QuantumNous
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@quantumnous.com
+*/
 import { Activity, RotateCw } from 'lucide-react'
+import { memo, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { formatTimestampToDate } from '@/lib/format'
-import { cn } from '@/lib/utils'
-import { useStatus } from '@/hooks/use-status'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { getUptimeStatus } from '@/features/dashboard/api'
@@ -11,13 +26,17 @@ import type {
   UptimeGroupResult,
   UptimeMonitor,
 } from '@/features/dashboard/types'
+import { useStatus } from '@/hooks/use-status'
+import { formatTimestampToDate } from '@/lib/format'
+import { cn } from '@/lib/utils'
+
 import { PanelWrapper } from '../ui/panel-wrapper'
 
 const STATUS_COLOR_MAP: Record<number, string> = {
-  1: 'bg-success',
-  0: 'bg-destructive',
-  2: 'bg-warning',
-  3: 'bg-info',
+  1: 'bg-emerald-500',
+  0: 'bg-red-500',
+  2: 'bg-amber-500',
+  3: 'bg-blue-500',
 }
 const DEFAULT_STATUS_COLOR = 'bg-muted-foreground/40'
 

@@ -43,3 +43,8 @@ website/node_modules
 website/.vitepress/dist
 website/.vitepress/cache
 website/public/bg-video.mp4
+
+# Local-only live probes and scratch test workspaces.
+.local-tests/
+service/relayconvert/chat_responses_live_local_test.go
+service/openaicompat/chat_responses_live_local_test.go

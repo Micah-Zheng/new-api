@@ -17,6 +17,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 import { useEffect, useState } from 'react'
+
+import { isHttpUrl } from '@/lib/content-format'
 import { getHomePageContent } from '../api'
 import type { HomePageContentResult } from '../types'
 
@@ -72,13 +74,7 @@ export function useHomePageContent(): HomePageContentResult {
     }
   }, [])
 
-  let isUrl = false
-  try {
-    const url = new URL(content)
-    isUrl = url.protocol === 'http:' || url.protocol === 'https:'
-  } catch {
-    // not a URL
-  }
+  const isUrl = isHttpUrl(content)
 
   return { content, isLoaded, isUrl }
 }

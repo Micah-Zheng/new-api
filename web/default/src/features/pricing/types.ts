@@ -56,10 +56,7 @@ export type PricingModel = {
   billing_expr?: string
   /** Pricing version returned by backend, useful for cache busting */
   pricing_version?: string
-  /**
-   * Image billing mode: "per_size" means flat per-image price by resolution.
-   * Absent or empty means standard token billing.
-   */
+  /** Image billing mode: "per_size" means flat per-image price by resolution. */
   image_billing_mode?: string
   /** Per-resolution prices (USD/image). Present when image_billing_mode === "per_size". */
   image_per_size_prices?: {
@@ -68,10 +65,8 @@ export type PricingModel = {
     price_4k: number
   }
   /**
-   * Optional model metadata fields. These are not yet returned by the backend
-   * and are populated client-side from {@link inferModelMetadata}.
-   * When the backend ships these fields, the inference layer becomes a
-   * fallback rather than the source of truth.
+   * Optional model metadata fields reserved for backend-provided catalog data.
+   * Keep them data-driven; do not synthesize display values on the client.
    */
   context_length?: number
   max_output_tokens?: number
