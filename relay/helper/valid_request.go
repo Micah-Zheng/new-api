@@ -200,6 +200,15 @@ func exceedsMaxTokensLimit(values ...*uint) bool {
 	return false
 }
 
+func containsOneTokenProbe(values ...*uint) bool {
+	for _, v := range values {
+		if lo.FromPtrOr(v, uint(0)) == 1 {
+			return true
+		}
+	}
+	return false
+}
+
 func GetAndValidateResponsesRequest(c *gin.Context) (*dto.OpenAIResponsesRequest, error) {
 	request := &dto.OpenAIResponsesRequest{}
 	err := common.UnmarshalBodyReusable(c, request)
@@ -214,6 +223,9 @@ func GetAndValidateResponsesRequest(c *gin.Context) (*dto.OpenAIResponsesRequest
 	}
 	if exceedsMaxTokensLimit(request.MaxOutputTokens) {
 		return nil, errors.New("max_output_tokens is invalid")
+	}
+	if containsOneTokenProbe(request.MaxOutputTokens) {
+		return nil, errors.New("one-token probe requests are not allowed")
 	}
 	return request, nil
 }
@@ -362,6 +374,9 @@ func GetAndValidateClaudeRequest(c *gin.Context) (textRequest *dto.ClaudeRequest
 	if exceedsMaxTokensLimit(textRequest.MaxTokens, textRequest.MaxTokensToSample) {
 		return nil, errors.New("max_tokens is invalid")
 	}
+	if containsOneTokenProbe(textRequest.MaxTokens, textRequest.MaxTokensToSample) {
+		return nil, errors.New("one-token probe requests are not allowed")
+	}
 
 	//if textRequest.Stream {
 	//	relayInfo.IsStream = true
@@ -386,6 +401,9 @@ func GetAndValidateTextRequest(c *gin.Context, relayMode int) (*dto.GeneralOpenA
 
 	if exceedsMaxTokensLimit(textRequest.MaxTokens, textRequest.MaxCompletionTokens) {
 		return nil, errors.New("max_tokens is invalid")
+	}
+	if containsOneTokenProbe(textRequest.MaxTokens, textRequest.MaxCompletionTokens) {
+		return nil, errors.New("one-token probe requests are not allowed")
 	}
 	if textRequest.Model == "" {
 		return nil, errors.New("model is required")
@@ -439,6 +457,9 @@ func GetAndValidateGeminiRequest(c *gin.Context) (*dto.GeminiChatRequest, error)
 	}
 	if exceedsMaxTokensLimit(request.GenerationConfig.MaxOutputTokens) {
 		return nil, errors.New("maxOutputTokens is invalid")
+	}
+	if containsOneTokenProbe(request.GenerationConfig.MaxOutputTokens) {
+		return nil, errors.New("one-token probe requests are not allowed")
 	}
 
 	//if c.Query("alt") == "sse" {

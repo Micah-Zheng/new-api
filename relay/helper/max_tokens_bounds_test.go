@@ -70,3 +70,69 @@ func TestMaxTokensBounds(t *testing.T) {
 		require.Contains(t, err.Error(), "max_output_tokens is invalid")
 	})
 }
+
+func TestOneTokenProbeRejected(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	newJSONContext := func(t *testing.T, body string) *gin.Context {
+		c, _ := gin.CreateTestContext(httptest.NewRecorder())
+		c.Request = httptest.NewRequest(http.MethodPost, "/relay", bytes.NewBufferString(body))
+		c.Request.Header.Set("Content-Type", "application/json")
+		return c
+	}
+
+	t.Run("openai max_tokens one rejected", func(t *testing.T) {
+		c := newJSONContext(t, `{"model":"gpt-4o","messages":[{"role":"user","content":"hi"}],"max_tokens":1}`)
+		_, err := GetAndValidateTextRequest(c, relayconstant.RelayModeChatCompletions)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "one-token probe requests are not allowed")
+	})
+
+	t.Run("openai max_completion_tokens one rejected", func(t *testing.T) {
+		c := newJSONContext(t, `{"model":"gpt-4o","messages":[{"role":"user","content":"hi"}],"max_completion_tokens":1}`)
+		_, err := GetAndValidateTextRequest(c, relayconstant.RelayModeChatCompletions)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "one-token probe requests are not allowed")
+	})
+
+	t.Run("claude max_tokens one rejected", func(t *testing.T) {
+		c := newJSONContext(t, `{"model":"claude-sonnet-4","messages":[{"role":"user","content":"hi"}],"max_tokens":1}`)
+		_, err := GetAndValidateClaudeRequest(c)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "one-token probe requests are not allowed")
+	})
+
+	t.Run("claude max_tokens_to_sample one rejected", func(t *testing.T) {
+		c := newJSONContext(t, `{"model":"claude-sonnet-4","messages":[{"role":"user","content":"hi"}],"max_tokens_to_sample":1}`)
+		_, err := GetAndValidateClaudeRequest(c)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "one-token probe requests are not allowed")
+	})
+
+	t.Run("gemini maxOutputTokens one rejected", func(t *testing.T) {
+		c := newJSONContext(t, `{"contents":[{"parts":[{"text":"hi"}]}],"generationConfig":{"maxOutputTokens":1}}`)
+		_, err := GetAndValidateGeminiRequest(c)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "one-token probe requests are not allowed")
+	})
+
+	t.Run("responses max_output_tokens one rejected", func(t *testing.T) {
+		c := newJSONContext(t, `{"model":"gpt-4o","input":"hi","max_output_tokens":1}`)
+		_, err := GetAndValidateResponsesRequest(c)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "one-token probe requests are not allowed")
+	})
+
+	t.Run("missing max tokens accepted", func(t *testing.T) {
+		c := newJSONContext(t, `{"model":"gpt-4o","messages":[{"role":"user","content":"hi"}]}`)
+		_, err := GetAndValidateTextRequest(c, relayconstant.RelayModeChatCompletions)
+		require.NoError(t, err)
+	})
+
+	t.Run("max tokens above one accepted", func(t *testing.T) {
+		c := newJSONContext(t, `{"model":"gpt-4o","messages":[{"role":"user","content":"hi"}],"max_tokens":2}`)
+		req, err := GetAndValidateTextRequest(c, relayconstant.RelayModeChatCompletions)
+		require.NoError(t, err)
+		require.EqualValues(t, 2, *req.MaxTokens)
+	})
+}
