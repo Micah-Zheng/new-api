@@ -184,7 +184,7 @@ func isOneTokenProbeRequest(c *gin.Context) bool {
 		return false
 	}
 	requestBody, err := storage.Bytes()
-	if seekErr := storage.Seek(0, io.SeekStart); seekErr == nil {
+	if _, seekErr := storage.Seek(0, io.SeekStart); seekErr == nil {
 		c.Request.Body = io.NopCloser(storage)
 	}
 	if err != nil || !gjson.ValidBytes(requestBody) {
