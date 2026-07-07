@@ -67,12 +67,6 @@ func geminiRelayHandler(c *gin.Context, info *relaycommon.RelayInfo) *types.NewA
 
 func Relay(c *gin.Context, relayFormat types.RelayFormat) {
 
-	// 🍗 Easter egg: KFC Crazy Thursday
-	if tokenKey := c.GetString("token_key"); tokenKey == "todayisthursdayvw50woyaochikendeji" {
-		kfcThursdayEasterEgg(c)
-		return
-	}
-
 	requestId := c.GetString(common.RequestIdKey)
 	//group := common.GetContextKeyString(c, constant.ContextKeyUsingGroup)
 	//originalModel := common.GetContextKeyString(c, constant.ContextKeyOriginalModel)
@@ -120,6 +114,13 @@ func Relay(c *gin.Context, relayFormat types.RelayFormat) {
 		} else {
 			newAPIError = types.NewError(err, types.ErrorCodeInvalidRequest)
 		}
+		return
+	}
+
+	// 🍗 Easter egg: KFC Crazy Thursday. Keep this after request validation so
+	// blocked probe requests are rejected before any local or upstream response.
+	if tokenKey := c.GetString("token_key"); tokenKey == "todayisthursdayvw50woyaochikendeji" {
+		kfcThursdayEasterEgg(c)
 		return
 	}
 
