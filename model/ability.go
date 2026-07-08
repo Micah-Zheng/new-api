@@ -332,6 +332,7 @@ func ensureModelMetadataForNames(tx *gorm.DB, modelNames []string) error {
 	for _, modelName := range modelNames {
 		rows = append(rows, map[string]any{
 			"model_name":    modelName,
+			"vendor_id":     getExistingDefaultVendorID(useDB, modelName),
 			"status":        1,
 			"sync_official": 0,
 			"name_rule":     NameRuleExact,
@@ -346,6 +347,21 @@ func ensureModelMetadataForNames(tx *gorm.DB, modelNames []string) error {
 		}
 	}
 	return nil
+}
+
+func getExistingDefaultVendorID(tx *gorm.DB, modelName string) int {
+	modelLower := strings.ToLower(modelName)
+	for pattern, vendorName := range defaultVendorRules {
+		if !strings.Contains(modelLower, pattern) {
+			continue
+		}
+		var vendorID int
+		if err := tx.Model(&Vendor{}).Where("name = ?", vendorName).Select("id").Scan(&vendorID).Error; err == nil {
+			return vendorID
+		}
+		return 0
+	}
+	return 0
 }
 
 func UpdateAbilityStatus(channelId int, status bool) error {
