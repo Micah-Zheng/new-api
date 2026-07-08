@@ -42,12 +42,12 @@ func TestAddAbilitiesDoesNotOverwriteExistingModelMetadata(t *testing.T) {
 	require.NoError(t, DB.AutoMigrate(&Model{}))
 	require.NoError(t, DB.Exec("DELETE FROM abilities").Error)
 	require.NoError(t, DB.Exec("DELETE FROM models").Error)
-	require.NoError(t, DB.Create(&Model{
-		ModelName:    "claude-sonnet-5",
-		Description:  "existing description",
-		Status:       0,
-		SyncOfficial: 1,
-		NameRule:     NameRuleContains,
+	require.NoError(t, DB.Model(&Model{}).Create(map[string]any{
+		"model_name":    "claude-sonnet-5",
+		"description":   "existing description",
+		"status":        0,
+		"sync_official": 1,
+		"name_rule":     NameRuleContains,
 	}).Error)
 
 	channel := &Channel{
