@@ -193,8 +193,8 @@ func filterAbilitiesByRequestPath(abilities []Ability, requestPath string) []Abi
 }
 
 func (channel *Channel) AddAbilities(tx *gorm.DB) error {
-	models_ := normalizeLookupValues(strings.Split(channel.Models, ","))
-	groups_ := normalizeLookupValues(strings.Split(channel.Group, ","))
+	models_ := strings.Split(channel.Models, ",")
+	groups_ := strings.Split(channel.Group, ",")
 	abilitySet := make(map[string]struct{})
 	abilities := make([]Ability, 0, len(models_))
 	for _, model := range models_ {
@@ -230,7 +230,7 @@ func (channel *Channel) AddAbilities(tx *gorm.DB) error {
 			return err
 		}
 	}
-	return ensureModelMetadataForNames(useDB, models_)
+	return nil
 }
 
 func (channel *Channel) DeleteAbilities() error {
@@ -265,8 +265,8 @@ func (channel *Channel) UpdateAbilities(tx *gorm.DB) error {
 	}
 
 	// Then add new abilities
-	models_ := normalizeLookupValues(strings.Split(channel.Models, ","))
-	groups_ := normalizeLookupValues(strings.Split(channel.Group, ","))
+	models_ := strings.Split(channel.Models, ",")
+	groups_ := strings.Split(channel.Group, ",")
 	abilitySet := make(map[string]struct{})
 	abilities := make([]Ability, 0, len(models_))
 	for _, model := range models_ {
@@ -300,51 +300,12 @@ func (channel *Channel) UpdateAbilities(tx *gorm.DB) error {
 			}
 		}
 	}
-	if len(abilities) > 0 {
-		if err = ensureModelMetadataForNames(tx, models_); err != nil {
-			if isNewTx {
-				tx.Rollback()
-			}
-			return err
-		}
-	}
 
 	// 如果是新创建的事务，需要提交
 	if isNewTx {
 		return tx.Commit().Error
 	}
 
-	return nil
-}
-
-func ensureModelMetadataForNames(tx *gorm.DB, modelNames []string) error {
-	modelNames = normalizeLookupValues(modelNames)
-	if len(modelNames) == 0 {
-		return nil
-	}
-	useDB := DB
-	if tx != nil {
-		useDB = tx
-	}
-
-	now := common.GetTimestamp()
-	rows := make([]map[string]any, 0, len(modelNames))
-	for _, modelName := range modelNames {
-		rows = append(rows, map[string]any{
-			"model_name":    modelName,
-			"status":        1,
-			"sync_official": 0,
-			"name_rule":     NameRuleExact,
-			"created_time":  now,
-			"updated_time":  now,
-		})
-	}
-
-	for _, chunk := range lo.Chunk(rows, 50) {
-		if err := useDB.Model(&Model{}).Clauses(clause.OnConflict{DoNothing: true}).Create(&chunk).Error; err != nil {
-			return err
-		}
-	}
 	return nil
 }
 
