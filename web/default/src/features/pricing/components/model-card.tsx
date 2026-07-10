@@ -43,7 +43,6 @@ export interface ModelCardProps {
   usdExchangeRate?: number
   tokenUnit?: TokenUnit
   showRechargePrice?: boolean
-  selectedGroup?: string
   perf?: ModelPerfBadgeData
 }
 
@@ -74,8 +73,7 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
         priceRate,
         usdExchangeRate,
         groupRatioMultiplier: getDynamicDisplayGroupRatio(
-          props.model,
-          props.selectedGroup
+          props.model
         ),
       })
     : null
@@ -162,8 +160,7 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
               tokenUnit,
               showRechargePrice,
               priceRate,
-              usdExchangeRate,
-              props.selectedGroup
+              usdExchangeRate
             )}
           </span>
           /{tokenUnitLabel}
@@ -177,8 +174,7 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
               tokenUnit,
               showRechargePrice,
               priceRate,
-              usdExchangeRate,
-              props.selectedGroup
+              usdExchangeRate
             )}
           </span>
           /{tokenUnitLabel}
@@ -193,8 +189,7 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
                 tokenUnit,
                 showRechargePrice,
                 priceRate,
-                usdExchangeRate,
-                props.selectedGroup
+                usdExchangeRate
               )}
             </span>
           </span>
@@ -209,8 +204,7 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
             props.model,
             showRechargePrice,
             priceRate,
-            usdExchangeRate,
-            props.selectedGroup
+            usdExchangeRate
           )}
         </span>{' '}
         / {t('request')}
